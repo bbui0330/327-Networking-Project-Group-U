@@ -12,12 +12,12 @@ public class IpScanner {
 	 
     /**
      * @param networkId: the network id, or the subnet (i.e. 192.168.0)
-     * @param numOfIps: the number of IP addresses that will be tested (i.e. 254)
+     * @param numOfIps: the number of IP addresses that will be tested (i.e. 255)
      * @return ConcurrentSkipListSet: the list of IP addresses
      */
     public ConcurrentSkipListSet<String> scan(String networkId, int numOfIps) {
         // Creates a thread pool that reuses a fixed number of threads (100)
-    	ExecutorService executorService = Executors.newFixedThreadPool(100);
+    	ExecutorService executorService = Executors.newFixedThreadPool(255);
         // stores all the IP addresses in a ConcurrentSkipListSet
         ConcurrentSkipListSet<String> ipsSet = new ConcurrentSkipListSet<>();
 
