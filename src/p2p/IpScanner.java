@@ -10,20 +10,35 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class IpScanner {
 	 
-
-    public ConcurrentSkipListSet scan(String firstIpInTheNetwork, int numOfIps) {
-        ExecutorService executorService = Executors.newFixedThreadPool(20);
+    /**
+     * @param firstIpInTheNetwork: the first IP address in the network (i.e. 192.168.0.0)
+     * @param numOfIps: the number of IP addresses that will be tested (i.e. 254)
+     * @return ConcurrentSkipListSet: the list of IP addresses
+     */
+    public ConcurrentSkipListSet<String> scan(String firstIpInTheNetwork, int numOfIps) {
+        // Creates a thread pool that reuses a fixed number of threads (100)
+    	ExecutorService executorService = Executors.newFixedThreadPool(100);
+        // networkId stores the subnet (in our case this is 192.168.0.)
         final String networkId = firstIpInTheNetwork.substring(0, firstIpInTheNetwork.length() - 1);
-        ConcurrentSkipListSet ipsSet = new ConcurrentSkipListSet();
+        // stores all the IP addresses in a ConcurrentSkipListSet
+        ConcurrentSkipListSet<String> ipsSet = new ConcurrentSkipListSet<>();
 
+        // creates a new AtomicInteger with the initial value of 0
         AtomicInteger ips = new AtomicInteger(0);
+        // timeout
+        int timeout = 500;
+        
         while (ips.get() <= numOfIps) {
+        	// ips.getAndIncrement() automatically increments the current value by one
             String ip = networkId + ips.getAndIncrement();
+            // 
             executorService.submit(() -> {
                 try {
+                	// Determines the IP address of ip
                     InetAddress inAddress = InetAddress.getByName(ip);
-                    if (inAddress.isReachable(500)) {
-                        ipsSet.add(ip);
+                    if (inAddress.isReachable(timeout)) {
+                    	// adds the IP address to the array if reachable
+                        ipsSet.add(ip);	
                     }
                 }
                 catch (IOException e) {
@@ -31,8 +46,13 @@ public class IpScanner {
                 }
             });
         }
+        // A shutdown in which previously submitted tasks are executed
+        // but no new tasks will be accepted
         executorService.shutdown();
         try {
+        	// blocks until all tasks have been completed
+        	// or until a timeout occurs 
+        	// timeout is currently set to 1 minute
             executorService.awaitTermination(1, TimeUnit.MINUTES);
         }
         catch (InterruptedException e) {
