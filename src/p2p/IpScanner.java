@@ -11,22 +11,20 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class IpScanner {
 	 
     /**
-     * @param firstIpInTheNetwork: the first IP address in the network (i.e. 192.168.0.0)
+     * @param networkId: the network id, or the subnet (i.e. 192.168.0)
      * @param numOfIps: the number of IP addresses that will be tested (i.e. 254)
      * @return ConcurrentSkipListSet: the list of IP addresses
      */
-    public ConcurrentSkipListSet<String> scan(String firstIpInTheNetwork, int numOfIps) {
+    public ConcurrentSkipListSet<String> scan(String networkId, int numOfIps) {
         // Creates a thread pool that reuses a fixed number of threads (100)
     	ExecutorService executorService = Executors.newFixedThreadPool(100);
-        // networkId stores the subnet (in our case this is 192.168.0.)
-        final String networkId = firstIpInTheNetwork.substring(0, firstIpInTheNetwork.length() - 1);
         // stores all the IP addresses in a ConcurrentSkipListSet
         ConcurrentSkipListSet<String> ipsSet = new ConcurrentSkipListSet<>();
 
         // creates a new AtomicInteger with the initial value of 0
         AtomicInteger ips = new AtomicInteger(0);
         // timeout
-        int timeout = 500;
+        int timeout = 1000;
         
         while (ips.get() <= numOfIps) {
         	// ips.getAndIncrement() automatically increments the current value by one
