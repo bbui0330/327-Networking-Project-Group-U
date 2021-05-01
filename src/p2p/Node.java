@@ -140,6 +140,21 @@ public class Node extends Thread {
 	 */
 	private void fileComparison(NodeInfo nodeInfo, Socket socket) throws IOException, InterruptedException {
 		Hashtable<String, File[]> dht = nodeInfo.getDHT();	// gets the dht table
+		System.out.println("\nDHT:");
+		Enumeration dhtNames = dht.keys();
+		while(dhtNames.hasMoreElements()) {
+			String key = (String) dhtNames.nextElement();
+			System.out.print("Key: " +key+" & Value: [ "); 
+			for(int i = 0; i < dht.get(key).length; i++) {
+				if(i == dht.get(key).length-1) {
+					System.out.print(dht.get(key)[i].getName());
+					break;
+				}
+				System.out.print(dht.get(key)[i].getName() + ", ");
+			}
+			System.out.print("]\n\n");
+
+		}
 		// stores the list of keys (IP addresses)
 		String[] keys = dht.keySet().toArray(new String[dht.keySet().size()]);
 		// stores a list of files from my device
