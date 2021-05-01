@@ -16,7 +16,7 @@ public class Node extends Thread {
 	FileHandler fileHandler; 
 	String type;
 	ConcurrentSkipListSet<String> networkIps;
-	
+
 	/**
 	 * Constructor
 	 * @param type: determine whether the peer is acting as client or server
@@ -43,10 +43,10 @@ public class Node extends Thread {
 			this.ip = InetAddress.getLocalHost().getHostAddress().toString();
 			// creates a server socket, bound to the specified port
 			ServerSocket serverSock = new ServerSocket(port);
-			
+
 			Socket server = serverSock.accept();
 			System.out.println("Connected");
-			
+
 			NodeInfo serverNodeInfo = new NodeInfo(server);
 			serverNodeInfo.addNode(this.ip);
 			serverNodeInfo.receiveDHT();
@@ -56,10 +56,17 @@ public class Node extends Thread {
 			Enumeration names = dhtServer.keys();
 			while(names.hasMoreElements()) {
 				String key = (String) names.nextElement();
-				System.out.println("Key: " +key+ " & Value: " +
-						dhtServer.get(key));
+				System.out.print("Key: " +key+" & Value: ["); 
+				for(int i = 0; i < dhtServer.get(key).length; i++) {
+					if(i == dhtServer.get(key).length-1) {
+						System.out.print(dhtServer.get(key)[i].getName());
+						break;
+					}
+					System.out.print(dhtServer.get(key)[i].getName() + ", ");
+				}
+				System.out.print("]\n\n");
 			}
-			
+
 			// receive file
 			fileHandler.receiveFile(server);
 
@@ -75,26 +82,34 @@ public class Node extends Thread {
 					 * specified port number at the specified IP address */
 					peer = new Socket(ip, port);
 					System.out.println("Connected");
-					
+
 					//
 					NodeInfo peerNodeInfo = new NodeInfo(peer);
 					peerNodeInfo.addNode(InetAddress.getLocalHost().getHostAddress().toString());
 					peerNodeInfo.sendDHT();
 					Thread.sleep(1000);
 					peerNodeInfo.receiveDHT();
-					
+
 					Hashtable<String, File[]> dhtPeer = peerNodeInfo.getDHT();
 					System.out.println("\nDHT:");
 					Enumeration dhtNames = dhtPeer.keys();
 					while(dhtNames.hasMoreElements()) {
 						String key = (String) dhtNames.nextElement();
-						System.out.println("Key: " +key+ " & Value: " +
-								dhtPeer.get(key));
+						System.out.print("Key: " +key+" & Value: [ "); 
+						for(int i = 0; i < dhtPeer.get(key).length; i++) {
+							if(i == dhtPeer.get(key).length-1) {
+								System.out.print(dhtPeer.get(key)[i].getName());
+								break;
+							}
+							System.out.print(dhtPeer.get(key)[i].getName() + ", ");
+						}
+						System.out.print("]\n\n");
+
 					}
-					
+
 					// send file
 					fileHandler.sendFile(peer);
-					
+
 					peer.close();		// closes the socket
 				} catch (ConnectException e) {
 					// do nothing
@@ -103,22 +118,22 @@ public class Node extends Thread {
 			break;
 		}
 	}
-	
+
 	@Override
-    public void run() {
-        super.run();
-        try{
-        	link();	// starts the link() function
-        }
-        catch(IOException e) {} catch (ClassNotFoundException e) {
+	public void run() {
+		super.run();
+		try{
+			link();	// starts the link() function
+		}
+		catch(IOException e) {} catch (ClassNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-    }
+	}
 
-	
-	
+
+
 }
