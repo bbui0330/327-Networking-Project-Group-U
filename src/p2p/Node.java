@@ -158,7 +158,7 @@ public class Node extends Thread {
 		// stores the list of keys (IP addresses)
 		String[] keys = dht.keySet().toArray(new String[dht.keySet().size()]);
 		// stores a list of files from my device
-		List<File> files = new ArrayList<File>(Arrays.asList(dht.get(InetAddress.getLocalHost().getHostAddress().toString())));
+		List<File> files = new ArrayList<File>(Arrays.asList(dht.get(fileHandler.getListofFiles())));
 		// stores the absolute path of the folder
 		String path = fileHandler.getPath();
 		for(int j = 0; j < keys.length; j++) {
@@ -175,7 +175,7 @@ public class Node extends Thread {
 						    // if peer/node has a more recently modified version
 						    if(fileLastModified > myFileLastModified) {
 						    	fileHandler.requestFile(socket, f.getName());
-						    	sleep(1000);
+//						    	sleep(1000);
 						    	fileHandler.receiveFile(socket, f);
 						    	System.out.println("Updated to your file");
 						    }else {
@@ -185,7 +185,7 @@ public class Node extends Thread {
 						}
 					}else {	// I do not have the file
 						fileHandler.requestFile(socket, f.getName());
-				    	sleep(1000);
+//				    	sleep(1000);
 				    	fileHandler.receiveFile(socket, f);
 				    	System.out.println("I copied your file");
 					}
