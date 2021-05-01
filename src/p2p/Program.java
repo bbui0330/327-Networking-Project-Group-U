@@ -18,8 +18,8 @@ public class Program {
 		  System.out.println("");
 //		  ClientServer network = new ClientServer(networkIps.size());
 		  
-		  Node server = new Node("Server", 6066, InetAddress.getLocalHost().getHostAddress());
-//		  Node client = new Node("Client", 6066, InetAddress.getLocalHost().getHostAddress());
+//		  Node server = new Node("Server", 6066, networkIps);
+		  Node client = new Node("Client", 6066, networkIps);
 	}
 
 }

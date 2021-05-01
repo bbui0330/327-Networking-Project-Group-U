@@ -1,19 +1,11 @@
 package p2p;
 
 import java.io.IOException;
-import java.io.PrintWriter;
+import java.net.ConnectException;
+import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.net.UnknownHostException;
-import java.nio.channels.FileChannel;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardOpenOption;
-import java.util.ArrayList;
-import java.util.EnumSet;
-import java.util.List;
-
-import javax.swing.JOptionPane;
+import java.util.concurrent.ConcurrentSkipListSet;
 
 public class Node {
 	
@@ -41,13 +33,13 @@ public class Node {
 	int port;
 	String ip;
 	
-	public Node(String type, int port, String IP) throws IOException {
+	public Node(String type, int port, ConcurrentSkipListSet<String> networkIps) throws IOException {
 		switch(type) {
 		case "Server":
 			this.port = port;
-			this.ip = IP;
-			ServerSocket serverSock=new ServerSocket(port);
-			Socket Sock=serverSock .accept();
+			this.ip = InetAddress.getLocalHost().getHostAddress().toString();
+			ServerSocket serverSock = new ServerSocket(port);
+			Socket Sock=serverSock.accept();
 			System.out.println("Connected");
 			/*
 			 * DataOutputStream out =new DataOutputStream(Sock.getOutputStream());
@@ -58,15 +50,25 @@ public class Node {
 			break;
 		case "Client":
 			this.port = port;
-			this.ip = IP;
-			Socket sock=new Socket("localhost", port);
-			/*
-			 * DataInputStream in= new DataInputStream(sock.getInputStream());
-			 * System.out.println(in.readUTF()); DataOutputStream out =new
-			 * DataOutputStream(sock.getOutputStream());
-			 * out.writeUTF("waiting for connection");
-			 */
-			sock.close();
+			System.out.println("Waiting for connection ...");
+			Socket client;
+			for(String ip : networkIps) {
+				try {
+					client = new Socket(ip, port);
+					System.out.println("Connected");
+					
+					/*
+					 * DataInputStream in= new DataInputStream(sock.getInputStream());
+					 * System.out.println(in.readUTF()); DataOutputStream out =new
+					 * DataOutputStream(sock.getOutputStream());
+					 * out.writeUTF("waiting for connection");
+					 */
+					client.close();
+				}catch(ConnectException e) {
+					// do nothing
+				}
+			}
+			
 			break;
 		}
 		
