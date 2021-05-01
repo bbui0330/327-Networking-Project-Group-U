@@ -17,8 +17,8 @@ public class Program {
 		 
 		  System.out.println("");
 		  
-//		  Node server = new Node("Server", 6066, networkIps);
-		  Node client = new Node("Client", 6066, networkIps);
+		  Node server = new Node("Server", 6066, networkIps);
+//		  Node client = new Node("Client", 6066, networkIps);
 		  
 		  // file
 		  
