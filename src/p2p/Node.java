@@ -105,21 +105,10 @@ public class Node {
 		    while((theByte = bis.read()) != -1) bos.write(theByte);
 
 		    bis.close();
+		    System.out.println("Sent " + name);
 		}
 
 		dos.close();
-		
-//		for(File myFile: getListofFiles()) {		
-//			byte [] mybytearrayclient  = new byte [(int)myFile.length()];
-//			FileInputStream fis = new FileInputStream(myFile);
-//			BufferedInputStream bis = new BufferedInputStream(fis);
-//			bis.read(mybytearrayclient,0,mybytearrayclient.length);
-//			OutputStream os = socket.getOutputStream();
-//			System.out.println("Sending " + myFile.getName() + "(" + mybytearrayclient.length + " bytes)");
-//			os.write(mybytearrayclient,0,mybytearrayclient.length);
-//			os.flush();
-//			System.out.println("Done.");
-//		}
 	}
 	
 	private void receiveFile(Socket socket) throws IOException {
@@ -139,26 +128,10 @@ public class Node {
 		    BufferedOutputStream bos = new BufferedOutputStream(fos);
 
 		    for(int j = 0; j < fileLength; j++) bos.write(bis.read());
+		    
+		    System.out.println("File " + fileName + " downloaded");
 
 		    bos.close();
-		
-//		byte [] mybytearray  = new byte [fileSize];
-//		InputStream is = socket.getInputStream();
-//		FileOutputStream fos = new FileOutputStream(fileName);
-//		BufferedOutputStream bos = new BufferedOutputStream(fos);
-//		int bytesRead = is.read(mybytearray,0,mybytearray.length);
-//		int current = bytesRead;
-//
-//		do {
-//			bytesRead =
-//					is.read(mybytearray, current, (mybytearray.length-current));
-//			if(bytesRead >= 0) current += bytesRead;
-//		} while(bytesRead > -1);
-//
-//		bos.write(mybytearray, 0 , current);
-//		bos.flush();
-//		System.out.println("File " + fileName
-//				+ " downloaded (" + current + " bytes read)");
 		}
 	}
 	
