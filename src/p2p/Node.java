@@ -148,7 +148,7 @@ public class Node extends Thread {
 		String path = fileHandler.getPath();
 		for(int j = 0; j < keys.length; j++) {
 			// compares my files to the other nodes/peers in the network
-			if(!keys[j].equals(ip)) {
+			if(!keys[j].equals(InetAddress.getLocalHost().getHostAddress().toString())) {
 				for(File f: dht.get(keys[j])) {
 					// changes absolute path to my absolute path to check if I have the file
 					File temp = new File(path + File.separator + f.getName());
