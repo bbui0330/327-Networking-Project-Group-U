@@ -26,6 +26,10 @@ public class NodeInfo {
 	 * @param ip: IP address associated with the current node/peer
 	 */
 	public void addNode(String ip) {
+		if(dht.containsKey(ip)) {
+			updateNode(ip);
+			return;
+		}
 		FileHandler fileHandler = new FileHandler();
 		File[] files = fileHandler.getListofFiles();
 		dht.put(ip, files);
