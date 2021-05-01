@@ -76,31 +76,6 @@ public class Node extends Thread {
 //				System.out.print("]\n\n");
 //			}
 
-//			String[] serverKeys = dhtServer.keySet().toArray(new String[dhtServer.keySet().size()]);
-//			List<File> myFiles = new ArrayList<File>(Arrays.asList(dhtServer.get(this.ip)));
-//			String myPath = fileHandler.getPath();
-//			for(int j = 0; j < serverKeys.length; j++) {
-//				if(!dhtServer.get(serverKeys[j]).equals(dhtServer.get(this.ip))) {
-//					for(File f: dhtServer.get(serverKeys[j])) {
-//						File temp = new File(myPath + File.separator + f.getName());
-//						if(myFiles.contains(temp)) {
-//							if(!fileHandler.compareFiles(myFiles.get(myFiles.indexOf(temp)), f)) {
-//								//Getting the last modified time
-//							    long fileLastModified = f.lastModified();
-//							    long myFileLastModified = myFiles.get(myFiles.indexOf(temp)).lastModified();
-//							    if(fileLastModified > myFileLastModified) {
-//							    	fileHandler.receiveFile(server, f);
-//							    }else {
-//							    	fileHandler.sendFile(server, myFiles.get(myFiles.indexOf(temp)));
-//							    }
-//							}
-//						}else {
-//							fileHandler.receiveFile(server, f);
-//						}
-//					}
-//				}
-//			}
-
 //			// receive file
 //			fileHandler.receiveFiles(server);
 
@@ -156,28 +131,43 @@ public class Node extends Thread {
 		}
 	}
 	
+	/**
+	 * Compares the files
+	 * @param nodeInfo
+	 * @param socket
+	 * @throws IOException
+	 */
 	private void fileComparison(NodeInfo nodeInfo, Socket socket) throws IOException {
-		Hashtable<String, File[]> dht = nodeInfo.getDHT();
+		Hashtable<String, File[]> dht = nodeInfo.getDHT();	// gets the dht table
+		// stores the list of keys (IP addresses)
 		String[] keys = dht.keySet().toArray(new String[dht.keySet().size()]);
+		// stores a list of files from my device
 		List<File> files = new ArrayList<File>(Arrays.asList(dht.get(this.ip)));
+		// stores the absolute path of the folder
 		String path = fileHandler.getPath();
 		for(int j = 0; j < keys.length; j++) {
+			// compares my files to the other nodes/peers in the network
 			if(!dht.get(keys[j]).equals(dht.get(this.ip))) {
 				for(File f: dht.get(keys[j])) {
+					// changes absolute path to my absolute path to check if I have the file
 					File temp = new File(path + File.separator + f.getName());
 					if(files.contains(temp)) {
 						if(!fileHandler.compareFiles(files.get(files.indexOf(temp)), f)) {
 							//Getting the last modified time
 						    long fileLastModified = f.lastModified();
 						    long myFileLastModified = files.get(files.indexOf(temp)).lastModified();
+						    // if peer/node has a more recently modified version
 						    if(fileLastModified > myFileLastModified) {
 						    	fileHandler.receiveFile(socket, f);
+						    	System.out.println(f.getName() + "has been received");
 						    }else {
 						    	fileHandler.sendFile(socket, files.get(files.indexOf(temp)));
+						    	System.out.println(f.getName() + "has been sent");
 						    }
 						}
-					}else {
+					}else {	// I do not have the file
 						fileHandler.receiveFile(socket, f);
+						System.out.println(f.getName() + "has been created");
 					}
 				}
 			}
