@@ -1,13 +1,18 @@
 package p2p;
 
+import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.ConnectException;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.Hashtable;
+import java.util.List;
 import java.util.concurrent.ConcurrentSkipListSet;
 
 public class Node extends Thread {
@@ -51,24 +56,53 @@ public class Node extends Thread {
 			serverNodeInfo.addNode(this.ip);
 			serverNodeInfo.receiveDHT();
 			serverNodeInfo.sendDHT();
-			Hashtable<String, File[]> dhtServer = serverNodeInfo.getDHT();
-			System.out.println("\nDHT:");
-			Enumeration names = dhtServer.keys();
-			while(names.hasMoreElements()) {
-				String key = (String) names.nextElement();
-				System.out.print("Key: " +key+" & Value: ["); 
-				for(int i = 0; i < dhtServer.get(key).length; i++) {
-					if(i == dhtServer.get(key).length-1) {
-						System.out.print(dhtServer.get(key)[i].getName());
-						break;
-					}
-					System.out.print(dhtServer.get(key)[i].getName() + ", ");
-				}
-				System.out.print("]\n\n");
-			}
+			
+			fileComparison(serverNodeInfo, server);
+			
+//			Hashtable<String, File[]> dhtServer = serverNodeInfo.getDHT();
+			
+//			System.out.println("\nDHT:");
+//			Enumeration names = dhtServer.keys();
+//			while(names.hasMoreElements()) {
+//				String key = (String) names.nextElement();
+//				System.out.print("Key: " +key+" & Value: ["); 
+//				for(int i = 0; i < dhtServer.get(key).length; i++) {
+//					if(i == dhtServer.get(key).length-1) {
+//						System.out.print(dhtServer.get(key)[i].getName());
+//						break;
+//					}
+//					System.out.print(dhtServer.get(key)[i].getName() + ", ");
+//				}
+//				System.out.print("]\n\n");
+//			}
 
-			// receive file
-			fileHandler.receiveFile(server);
+//			String[] serverKeys = dhtServer.keySet().toArray(new String[dhtServer.keySet().size()]);
+//			List<File> myFiles = new ArrayList<File>(Arrays.asList(dhtServer.get(this.ip)));
+//			String myPath = fileHandler.getPath();
+//			for(int j = 0; j < serverKeys.length; j++) {
+//				if(!dhtServer.get(serverKeys[j]).equals(dhtServer.get(this.ip))) {
+//					for(File f: dhtServer.get(serverKeys[j])) {
+//						File temp = new File(myPath + File.separator + f.getName());
+//						if(myFiles.contains(temp)) {
+//							if(!fileHandler.compareFiles(myFiles.get(myFiles.indexOf(temp)), f)) {
+//								//Getting the last modified time
+//							    long fileLastModified = f.lastModified();
+//							    long myFileLastModified = myFiles.get(myFiles.indexOf(temp)).lastModified();
+//							    if(fileLastModified > myFileLastModified) {
+//							    	fileHandler.receiveFile(server, f);
+//							    }else {
+//							    	fileHandler.sendFile(server, myFiles.get(myFiles.indexOf(temp)));
+//							    }
+//							}
+//						}else {
+//							fileHandler.receiveFile(server, f);
+//						}
+//					}
+//				}
+//			}
+
+//			// receive file
+//			fileHandler.receiveFiles(server);
 
 			server.close();		// closes the socket
 			break;
@@ -89,26 +123,29 @@ public class Node extends Thread {
 					peerNodeInfo.sendDHT();
 					Thread.sleep(1000);
 					peerNodeInfo.receiveDHT();
+					
+					fileComparison(peerNodeInfo, peer);
 
-					Hashtable<String, File[]> dhtPeer = peerNodeInfo.getDHT();
-					System.out.println("\nDHT:");
-					Enumeration dhtNames = dhtPeer.keys();
-					while(dhtNames.hasMoreElements()) {
-						String key = (String) dhtNames.nextElement();
-						System.out.print("Key: " +key+" & Value: [ "); 
-						for(int i = 0; i < dhtPeer.get(key).length; i++) {
-							if(i == dhtPeer.get(key).length-1) {
-								System.out.print(dhtPeer.get(key)[i].getName());
-								break;
-							}
-							System.out.print(dhtPeer.get(key)[i].getName() + ", ");
-						}
-						System.out.print("]\n\n");
+//					Hashtable<String, File[]> dhtPeer = peerNodeInfo.getDHT();
+//					System.out.println("\nDHT:");
+//					Enumeration dhtNames = dhtPeer.keys();
+//					while(dhtNames.hasMoreElements()) {
+//						String key = (String) dhtNames.nextElement();
+//						System.out.print("Key: " +key+" & Value: [ "); 
+//						for(int i = 0; i < dhtPeer.get(key).length; i++) {
+//							if(i == dhtPeer.get(key).length-1) {
+//								System.out.print(dhtPeer.get(key)[i].getName());
+//								break;
+//							}
+//							System.out.print(dhtPeer.get(key)[i].getName() + ", ");
+//						}
+//						System.out.print("]\n\n");
+//
+//					}
+					
 
-					}
-
-					// send file
-					fileHandler.sendFile(peer);
+//					// send file
+//					fileHandler.sendFiles(peer);
 
 					peer.close();		// closes the socket
 				} catch (ConnectException e) {
@@ -116,6 +153,34 @@ public class Node extends Thread {
 				}
 			}
 			break;
+		}
+	}
+	
+	private void fileComparison(NodeInfo nodeInfo, Socket socket) throws IOException {
+		Hashtable<String, File[]> dht = nodeInfo.getDHT();
+		String[] keys = dht.keySet().toArray(new String[dht.keySet().size()]);
+		List<File> files = new ArrayList<File>(Arrays.asList(dht.get(this.ip)));
+		String path = fileHandler.getPath();
+		for(int j = 0; j < keys.length; j++) {
+			if(!dht.get(keys[j]).equals(dht.get(this.ip))) {
+				for(File f: dht.get(keys[j])) {
+					File temp = new File(path + File.separator + f.getName());
+					if(files.contains(temp)) {
+						if(!fileHandler.compareFiles(files.get(files.indexOf(temp)), f)) {
+							//Getting the last modified time
+						    long fileLastModified = f.lastModified();
+						    long myFileLastModified = files.get(files.indexOf(temp)).lastModified();
+						    if(fileLastModified > myFileLastModified) {
+						    	fileHandler.receiveFile(socket, f);
+						    }else {
+						    	fileHandler.sendFile(socket, files.get(files.indexOf(temp)));
+						    }
+						}
+					}else {
+						fileHandler.receiveFile(socket, f);
+					}
+				}
+			}
 		}
 	}
 

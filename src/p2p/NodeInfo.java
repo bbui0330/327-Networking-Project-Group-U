@@ -12,34 +12,61 @@ public class NodeInfo {
 	Socket socket;
 	Hashtable<String, File[]> dht;
 	
+	/**
+	 * Constructor
+	 * @param socket: socket associated with the current node/peer
+	 */
 	public NodeInfo(Socket socket) {
 		this.socket = socket;
 		dht = new Hashtable<>();
 	}
 	
+	/**
+	 * Adds a node to the DHT 
+	 * @param ip: IP address associated with the current node/peer
+	 */
 	public void addNode(String ip) {
 		FileHandler fileHandler = new FileHandler();
 		File[] files = fileHandler.getListofFiles();
 		dht.put(ip, files);
 	}
 	
+	/**
+	 * Updates the list of files for a specified key
+	 * @param ip: IP address associated with the current node/peer
+	 */
 	public void updateNode(String ip) {
 		FileHandler fileHandler = new FileHandler();
 		File[] files = fileHandler.getListofFiles();
+		// checks if the list of files in the dht are the same as the directory
 		if(dht.get(ip) != files) {
+			// updates dht if the list is incorrect
 			dht.replace(ip, dht.get(ip), files);
 		}
 	}
 	
+	/**
+	 * Returns DHT
+	 * @return dht for the Nodes
+	 */
 	public Hashtable<String, File[]> getDHT(){
 		return dht;
 	}
 	
+	/**
+	 * Sends the DHT
+	 * @throws IOException
+	 */
 	public void sendDHT() throws IOException {
 		ObjectOutputStream oos = new ObjectOutputStream(socket.getOutputStream());
         oos.writeObject(dht);
 	}
 
+	/**
+	 * Receives the DHT
+	 * @throws IOException
+	 * @throws ClassNotFoundException
+	 */
 	public void receiveDHT() throws IOException, ClassNotFoundException {
 		InputStream is = socket.getInputStream();
 		ObjectInputStream ois = new ObjectInputStream(is);
