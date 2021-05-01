@@ -47,7 +47,7 @@ public class Node extends Thread {
 			System.out.println("Connected");
 			
 			NodeInfo serverNodeInfo = new NodeInfo(server);
-			serverNodeInfo.addNode(this);
+			serverNodeInfo.addNode(this.ip);
 			serverNodeInfo.receiveDHT();
 			serverNodeInfo.sendDHT();
 			Hashtable<String, File[]> dhtServer = serverNodeInfo.getDHT();
@@ -71,7 +71,7 @@ public class Node extends Thread {
 					
 					//
 					NodeInfo peerNodeInfo = new NodeInfo(peer);
-					peerNodeInfo.addNode(this);
+					peerNodeInfo.addNode(InetAddress.getLocalHost().getHostAddress().toString());
 					peerNodeInfo.sendDHT();
 					Thread.sleep(1000);
 					peerNodeInfo.receiveDHT();

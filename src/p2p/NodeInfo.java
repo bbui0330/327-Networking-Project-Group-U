@@ -17,15 +17,16 @@ public class NodeInfo {
 		dht = new Hashtable<>();
 	}
 	
-	public void addNode(Node n) {
-		String ip = n.ip;
-		File[] files = n.fileHandler.getListofFiles();
+	public void addNode(String ip) {
+		FileHandler fileHandler = new FileHandler();
+		File[] files = fileHandler.getListofFiles();
+		System.out.println(ip +"\n"+ files.toString());
 		dht.put(ip, files);
 	}
 	
-	public void updateNode(Node n) {
-		String ip = n.ip;
-		File[] files = n.fileHandler.getListofFiles();
+	public void updateNode(String ip) {
+		FileHandler fileHandler = new FileHandler();
+		File[] files = fileHandler.getListofFiles();
 		if(dht.get(ip) != files) {
 			dht.replace(ip, dht.get(ip), files);
 		}
