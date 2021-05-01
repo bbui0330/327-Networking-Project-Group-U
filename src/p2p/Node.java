@@ -41,31 +41,29 @@ public class Node {
 
 			while(server.isConnected()) {
 				String [] serverFiles = getListofFiles();
-//				System.out.println(java.util.Arrays.toString(getListofFiles()));
-				for(String s : serverFiles) {
-					Scanner in = new Scanner(server.getInputStream());
-					InputStream is = server.getInputStream();
-			        PrintWriter pr = new PrintWriter(server.getOutputStream(), true);
-			        String FileName = in.nextLine();
-			        int FileSize = in.nextInt();
-			        FileOutputStream fos = new FileOutputStream(FileName);
-			        BufferedOutputStream bos = new BufferedOutputStream(fos);
-			        byte[] filebyte = new byte[FileSize];
-			         
-			        int file = is.read(filebyte, 0, filebyte.length);
-			        bos.write(filebyte, 0, file);
-			         
-			        System.out.println("Incoming File: " + FileName);
-			        System.out.println("Size: " + FileSize + "Byte");
-			        if(FileSize == file)System.out.println("File is verified");
-			        else System.out.println("File is corrupted. File Recieved " + file + " Byte");
-			        pr.println("File Recieved SUccessfully.");
-				}
-//				DataOutputStream out =new DataOutputStream(server.getOutputStream());
-//				out.writeUTF("i am fine, thank you"); DataInputStream in= new
-//						DataInputStream(server.getInputStream()); System.out.println(in.readUTF());
-						server.close();
+				//				System.out.println(java.util.Arrays.toString(getListofFiles()));
+				Scanner in = new Scanner(server.getInputStream());
+				InputStream is = server.getInputStream();
+				PrintWriter pr = new PrintWriter(server.getOutputStream(), true);
+				String FileName = in.nextLine();
+				int FileSize = in.nextInt();
+				FileOutputStream fos = new FileOutputStream(FileName);
+				BufferedOutputStream bos = new BufferedOutputStream(fos);
+				byte[] filebyte = new byte[FileSize];
+
+				int file = is.read(filebyte, 0, filebyte.length);
+				bos.write(filebyte, 0, file);
+
+				System.out.println("Incoming File: " + FileName);
+				System.out.println("Size: " + FileSize + "Byte");
+				if(FileSize == file)System.out.println("File is verified");
+				else System.out.println("File is corrupted. File Recieved " + file + " Byte");
+				pr.println("File Recieved Successfully.");
 			}
+			// DataOutputStream out =new DataOutputStream(server.getOutputStream());
+			// out.writeUTF("i am fine, thank you"); DataInputStream in= new
+			// DataInputStream(server.getInputStream()); System.out.println(in.readUTF());
+			server.close();
 			break;
 		case "Client":
 			this.port = port;
@@ -78,22 +76,24 @@ public class Node {
 
 					//	while(client.isConnected()) {
 					String [] clientFiles = getListofFiles();
-//					System.out.println(java.util.Arrays.toString(getListofFiles()));
+					//					System.out.println(java.util.Arrays.toString(getListofFiles()));
+					String path = folderPath;
 					for(String s: clientFiles) {
-						File MyFile = new File(s);
-				        int FileSize = (int) MyFile.length();
-				        OutputStream os = client.getOutputStream();
-				        PrintWriter pr = new PrintWriter(client.getOutputStream(), true);
-				        BufferedInputStream bis = new BufferedInputStream(new FileInputStream(MyFile));
-				        Scanner in = new Scanner(client.getInputStream());
-				         
-				        pr.println(s);
-				        pr.println(FileSize);
-				        byte[] filebyte = new byte[FileSize];
-				        bis.read(filebyte, 0, filebyte.length);
-				        os.write(filebyte, 0, filebyte.length);
-				        System.out.println(in.nextLine());
-				        os.flush();
+						String file = path + File.separator + s;
+						File MyFile = new File(file);
+						int FileSize = (int) MyFile.length();
+						OutputStream os = client.getOutputStream();
+						PrintWriter pr = new PrintWriter(client.getOutputStream(), true);
+						BufferedInputStream bis = new BufferedInputStream(new FileInputStream(MyFile));
+						Scanner in = new Scanner(client.getInputStream());
+
+						pr.println(s);
+						pr.println(FileSize);
+						byte[] filebyte = new byte[FileSize];
+						bis.read(filebyte, 0, filebyte.length);
+						os.write(filebyte, 0, filebyte.length);
+						//				        System.out.println(in.nextLine());
+						os.flush();
 					}
 					//	DataInputStream input = new DataInputStream(client.getInputStream());
 					//	System.out.println(input.readUTF()); DataOutputStream output =new
@@ -116,6 +116,10 @@ public class Node {
 		if(!directoryPath.exists()) {
 			directoryPath.mkdir();
 		}
+	}
+
+	private String getPath() {
+		return folderPath;
 	}
 
 	private String[] getListofFiles() {
