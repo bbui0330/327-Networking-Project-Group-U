@@ -167,7 +167,9 @@ public class Node extends Thread {
 						    }
 						}
 					}else {	// I do not have the file
-						fileHandler.receiveFile(socket, f);
+						fileHandler.requestFile(socket, f.getName());
+				    	sleep(1000);
+				    	fileHandler.receiveFile(socket, f);
 					}
 				}
 			}
