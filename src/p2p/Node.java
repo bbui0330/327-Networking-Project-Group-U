@@ -162,14 +162,17 @@ public class Node extends Thread {
 						    	fileHandler.requestFile(socket, f.getName());
 						    	sleep(1000);
 						    	fileHandler.receiveFile(socket, f);
+						    	System.out.println("Updated to your file");
 						    }else {
 						    	fileHandler.sendFile(socket, files.get(files.indexOf(temp)));
+						    	System.out.println("You have my file");
 						    }
 						}
 					}else {	// I do not have the file
 						fileHandler.requestFile(socket, f.getName());
 				    	sleep(1000);
 				    	fileHandler.receiveFile(socket, f);
+				    	System.out.println("I copied your file");
 					}
 				}
 			}
