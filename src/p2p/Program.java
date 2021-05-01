@@ -14,6 +14,10 @@ public class Program {
 		  System.out.println("Devices connected to the network:");
 		  networkIps.forEach(ip -> System.out.println(ip));
 		 
+		  System.out.println("");
+		  // creates a node
+		  Node me = new Node(700, "C:/cecs327");
+		  me.receiveFile();
 	}
 
 }
