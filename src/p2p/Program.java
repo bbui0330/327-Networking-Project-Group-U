@@ -1,6 +1,5 @@
 package p2p;
 
-import java.net.InetAddress;
 import java.util.concurrent.ConcurrentSkipListSet;
 
 public class Program {
