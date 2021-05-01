@@ -219,10 +219,10 @@ public class FileHandler {
 		BufferedInputStream bis = new BufferedInputStream(socket.getInputStream());
 		// Creates a DataInputStream that uses the BufferedInputStream
 		DataInputStream dis = new DataInputStream(bis);
-
-		long fileLength = file.length();	// gets the file size
-	    String fileName = file.getName();	// gets the file name
-
+				
+		long fileLength = dis.readLong();	// gets the file size
+	    String fileName = dis.readUTF();	// gets the file name
+				
 	    // creates a new file and adds it to files list
 	    File temp = new File(getPath() + File.separator + fileName);
 
@@ -230,7 +230,7 @@ public class FileHandler {
 	    FileOutputStream fos = new FileOutputStream(temp);
 	    // Creates BufferedOutputStream to write data to FileOutputStream
 	    BufferedOutputStream bos = new BufferedOutputStream(fos);
-
+	 		
 	    for(int j = 0; j < fileLength; j++) {
 	    	// Writes the specified byte to the BufferedOutputStream
 	    	bos.write(bis.read());

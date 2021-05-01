@@ -162,15 +162,12 @@ public class Node extends Thread {
 						    	fileHandler.requestFile(socket, f.getName());
 						    	Thread.sleep(1000);
 						    	fileHandler.receiveFile(socket, f);
-						    	System.out.println(f.getName() + "has been received");
 						    }else {
 						    	fileHandler.sendFile(socket, files.get(files.indexOf(temp)));
-						    	System.out.println(f.getName() + "has been sent");
 						    }
 						}
 					}else {	// I do not have the file
 						fileHandler.receiveFile(socket, f);
-						System.out.println(f.getName() + "has been created");
 					}
 				}
 			}
