@@ -158,7 +158,7 @@ public class Node extends Thread {
 		// stores the list of keys (IP addresses)
 		String[] keys = dht.keySet().toArray(new String[dht.keySet().size()]);
 		// stores a list of files from my device
-		List<File> files = new ArrayList<File>(Arrays.asList(dht.get(fileHandler.getListofFiles())));
+		List<File> files = new ArrayList<File>(Arrays.asList(fileHandler.getListofFiles()));
 		// stores the absolute path of the folder
 		String path = fileHandler.getPath();
 		for(int j = 0; j < keys.length; j++) {
