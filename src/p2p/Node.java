@@ -40,7 +40,7 @@ public class Node {
 			System.out.println("Connected");
 
 			while(server.isConnected()) {
-				String [] serverFiles = getListofFiles();
+				File [] serverFiles = getListofFiles();
 				//				System.out.println(java.util.Arrays.toString(getListofFiles()));
 				Scanner in = new Scanner(server.getInputStream());
 				InputStream is = server.getInputStream();
@@ -75,19 +75,19 @@ public class Node {
 					System.out.println("Connected");
 
 					//	while(client.isConnected()) {
-					String [] clientFiles = getListofFiles();
-					//					System.out.println(java.util.Arrays.toString(getListofFiles()));
+					File [] clientFiles = getListofFiles();
+					//System.out.println(java.util.Arrays.toString(getListofFiles()));
 					String path = folderPath;
-					for(String s: clientFiles) {
-						String file = path + File.separator + s;
-						File MyFile = new File(file);
-						int FileSize = (int) MyFile.length();
+					for(File f: clientFiles) {
+						//String file = path + File.separator + s;
+//						File MyFile = new File(file);
+						int FileSize = (int) f.length();
 						OutputStream os = client.getOutputStream();
 						PrintWriter pr = new PrintWriter(client.getOutputStream(), true);
-						BufferedInputStream bis = new BufferedInputStream(new FileInputStream(MyFile));
+						BufferedInputStream bis = new BufferedInputStream(new FileInputStream(f));
 						Scanner in = new Scanner(client.getInputStream());
 
-						pr.println(s);
+						pr.println(f.getName());
 						pr.println(FileSize);
 						byte[] filebyte = new byte[FileSize];
 						bis.read(filebyte, 0, filebyte.length);
@@ -122,8 +122,8 @@ public class Node {
 		return folderPath;
 	}
 
-	private String[] getListofFiles() {
+	private File[] getListofFiles() {
 		setDirectory();
-		return directoryPath.list();
+		return directoryPath.listFiles();
 	}
 }
