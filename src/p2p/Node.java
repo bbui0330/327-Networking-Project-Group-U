@@ -143,12 +143,12 @@ public class Node extends Thread {
 		// stores the list of keys (IP addresses)
 		String[] keys = dht.keySet().toArray(new String[dht.keySet().size()]);
 		// stores a list of files from my device
-		List<File> files = new ArrayList<File>(Arrays.asList(dht.get(this.ip)));
+		List<File> files = new ArrayList<File>(Arrays.asList(fileHandler.getListofFiles()));
 		// stores the absolute path of the folder
 		String path = fileHandler.getPath();
 		for(int j = 0; j < keys.length; j++) {
 			// compares my files to the other nodes/peers in the network
-			if(!dht.get(keys[j]).equals(dht.get(this.ip))) {
+			if(!keys[j].equals(ip)) {
 				for(File f: dht.get(keys[j])) {
 					// changes absolute path to my absolute path to check if I have the file
 					File temp = new File(path + File.separator + f.getName());
@@ -160,7 +160,7 @@ public class Node extends Thread {
 						    // if peer/node has a more recently modified version
 						    if(fileLastModified > myFileLastModified) {
 						    	fileHandler.requestFile(socket, f.getName());
-						    	Thread.sleep(1000);
+						    	sleep(1000);
 						    	fileHandler.receiveFile(socket, f);
 						    }else {
 						    	fileHandler.sendFile(socket, files.get(files.indexOf(temp)));
