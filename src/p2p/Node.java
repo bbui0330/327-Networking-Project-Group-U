@@ -164,30 +164,62 @@ public class Node extends Thread {
 		for(int j = 0; j < keys.length; j++) {
 			// compares my files to the other nodes/peers in the network
 			if(!keys[j].equals(this.ip)) {
-				for(File f: dht.get(keys[j])) {
-					// changes absolute path to my absolute path to check if I have the file
-					File temp = new File(path + File.separator + f.getName());
-					if(files.contains(temp)) {
-						if(!fileHandler.compareFiles(files.get(files.indexOf(temp)), f)) {
-							//Getting the last modified time
-						    long fileLastModified = f.lastModified();
-						    long myFileLastModified = files.get(files.indexOf(temp)).lastModified();
-						    // if peer/node has a more recently modified version
-						    if(fileLastModified > myFileLastModified) {
-						    	fileHandler.requestFile(socket, f.getName());
-//						    	sleep(1000);
-						    	fileHandler.receiveFile(socket, f);
-						    	System.out.println("Updated to your file");
-						    }else {
-						    	fileHandler.sendFile(socket, files.get(files.indexOf(temp)));
-						    	System.out.println("You have my file");
-						    }
+				if(dht.get(keys[j]).length >= files.size()) {
+					for(File f: dht.get(keys[j])) {
+						// changes absolute path to my absolute path to check if I have the file
+						File temp = new File(path + File.separator + f.getName());
+						if(files.contains(temp)) {
+							if(!fileHandler.compareFiles(files.get(files.indexOf(temp)), f)) {
+								//Getting the last modified time
+							    long fileLastModified = f.lastModified();
+							    long myFileLastModified = files.get(files.indexOf(temp)).lastModified();
+							    // if peer/node has a more recently modified version
+							    if(fileLastModified > myFileLastModified) {
+							    	fileHandler.requestFile(socket, f.getName());
+//							    	sleep(1000);
+							    	fileHandler.receiveFile(socket, f);
+							    	System.out.println("Updated to your file");
+							    }else {
+							    	fileHandler.sendFile(socket, files.get(files.indexOf(temp)));
+							    	System.out.println("You have my file");
+							    }
+							}
+						}else {	// I do not have the file
+							fileHandler.requestFile(socket, f.getName());
+//					    	sleep(1000);
+					    	fileHandler.receiveFile(socket, f);
+					    	System.out.println("I copied your file");
 						}
-					}else {	// I do not have the file
-						fileHandler.requestFile(socket, f.getName());
-//				    	sleep(1000);
-				    	fileHandler.receiveFile(socket, f);
-				    	System.out.println("I copied your file");
+					}
+				}else {
+					for(int k = 0; k < files.size(); k++) {
+						// changes absolute path to my absolute path to check if I have the file
+						File temp = new File(path + File.separator + files.get(k).getName());
+						for(File f: dht.get(keys[k])) {
+							if(files.contains(f)) {
+								if(!fileHandler.compareFiles(f, files.get(k))) {
+									//Getting the last modified time
+									long fileLastModified = files.get(k).lastModified();
+									long myFileLastModified = files.get(files.indexOf(temp)).lastModified();
+									// if peer/node has a more recently modified version
+									if(fileLastModified > myFileLastModified) {
+										fileHandler.requestFile(socket, files.get(k).getName());
+										//							    	sleep(1000);
+										fileHandler.receiveFile(socket, files.get(k));
+										System.out.println("Updated to your file");
+									}else {
+										fileHandler.sendFile(socket, files.get(files.indexOf(temp)));
+										System.out.println("You have my file");
+									}
+								}
+							}else {	// I do not have the file
+								fileHandler.requestFile(socket, files.get(k).getName());
+								//					    	sleep(1000);
+								fileHandler.receiveFile(socket, files.get(k));
+								System.out.println("I copied your file");
+							}
+						}
+						
 					}
 				}
 			}
