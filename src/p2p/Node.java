@@ -41,7 +41,7 @@ public class Node {
 
 			while(server.isConnected()) {
 				// receive file
-				receiveFile(server);
+				receiveFile(server, FILE_SIZE, FILE);
 			}
 
 			server.close();
@@ -92,18 +92,18 @@ public class Node {
 			BufferedInputStream bis = new BufferedInputStream(fis);
 			bis.read(mybytearrayclient,0,mybytearrayclient.length);
 			OutputStream os = socket.getOutputStream();
-			System.out.println("Sending " + FILE + "(" + mybytearrayclient.length + " bytes)");
+			System.out.println("Sending " + myFile.getName() + "(" + mybytearrayclient.length + " bytes)");
 			os.write(mybytearrayclient,0,mybytearrayclient.length);
 			os.flush();
 			System.out.println("Done.");
 		}
 	}
 	
-	private void receiveFile(Socket socket) throws IOException {
+	private void receiveFile(Socket socket, int fileSize, String fileName) throws IOException {
 		// receive file
-		byte [] mybytearray  = new byte [FILE_SIZE];
+		byte [] mybytearray  = new byte [fileSize];
 		InputStream is = socket.getInputStream();
-		FileOutputStream fos = new FileOutputStream(FILE);
+		FileOutputStream fos = new FileOutputStream(fileName);
 		BufferedOutputStream bos = new BufferedOutputStream(fos);
 		int bytesRead = is.read(mybytearray,0,mybytearray.length);
 		int current = bytesRead;
@@ -116,7 +116,7 @@ public class Node {
 
 		bos.write(mybytearray, 0 , current);
 		bos.flush();
-		System.out.println("File " + FILE
+		System.out.println("File " + fileName
 				+ " downloaded (" + current + " bytes read)");
 	}
 }
