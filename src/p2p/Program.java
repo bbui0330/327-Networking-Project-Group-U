@@ -1,5 +1,6 @@
 package p2p;
 
+import java.net.InetAddress;
 import java.util.concurrent.ConcurrentSkipListSet;
 
 public class Program {
@@ -15,7 +16,10 @@ public class Program {
 		  networkIps.forEach(ip -> System.out.println(ip));
 		 
 		  System.out.println("");
-		  ClientServer network = new ClientServer(networkIps.size());
+//		  ClientServer network = new ClientServer(networkIps.size());
+		  
+		  Node server = new Node("Server", 6066, InetAddress.getLocalHost().getHostAddress());
+//		  Node client = new Node("Client", 6066, InetAddress.getLocalHost().getHostAddress());
 	}
 
 }
