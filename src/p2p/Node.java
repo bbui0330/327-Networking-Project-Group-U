@@ -89,21 +89,37 @@ public class Node {
 		DataOutputStream dos = new DataOutputStream(bos);
 		
 		dos.writeInt(getListofFiles().length);
-		
-		for(File myFile: getListofFiles()) {
-			String name = myFile.getName();
+
+		for(File file : getListofFiles())
+		{
+		    long length = file.length();
+		    dos.writeLong(length);
+
+		    String name = file.getName();
 		    dos.writeUTF(name);
-			
-			byte [] mybytearrayclient  = new byte [(int)myFile.length()];
-			FileInputStream fis = new FileInputStream(myFile);
-			BufferedInputStream bis = new BufferedInputStream(fis);
-			bis.read(mybytearrayclient,0,mybytearrayclient.length);
-			OutputStream os = socket.getOutputStream();
-			System.out.println("Sending " + myFile.getName() + "(" + mybytearrayclient.length + " bytes)");
-			os.write(mybytearrayclient,0,mybytearrayclient.length);
-			os.flush();
-			System.out.println("Done.");
+
+		    FileInputStream fis = new FileInputStream(file);
+		    BufferedInputStream bis = new BufferedInputStream(fis);
+
+		    int theByte = 0;
+		    while((theByte = bis.read()) != -1) bos.write(theByte);
+
+		    bis.close();
 		}
+
+		dos.close();
+		
+//		for(File myFile: getListofFiles()) {		
+//			byte [] mybytearrayclient  = new byte [(int)myFile.length()];
+//			FileInputStream fis = new FileInputStream(myFile);
+//			BufferedInputStream bis = new BufferedInputStream(fis);
+//			bis.read(mybytearrayclient,0,mybytearrayclient.length);
+//			OutputStream os = socket.getOutputStream();
+//			System.out.println("Sending " + myFile.getName() + "(" + mybytearrayclient.length + " bytes)");
+//			os.write(mybytearrayclient,0,mybytearrayclient.length);
+//			os.flush();
+//			System.out.println("Done.");
+//		}
 	}
 	
 	private void receiveFile(Socket socket) throws IOException {
