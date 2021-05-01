@@ -136,8 +136,9 @@ public class Node extends Thread {
 	 * @param nodeInfo
 	 * @param socket
 	 * @throws IOException
+	 * @throws InterruptedException 
 	 */
-	private void fileComparison(NodeInfo nodeInfo, Socket socket) throws IOException {
+	private void fileComparison(NodeInfo nodeInfo, Socket socket) throws IOException, InterruptedException {
 		Hashtable<String, File[]> dht = nodeInfo.getDHT();	// gets the dht table
 		// stores the list of keys (IP addresses)
 		String[] keys = dht.keySet().toArray(new String[dht.keySet().size()]);
@@ -158,6 +159,8 @@ public class Node extends Thread {
 						    long myFileLastModified = files.get(files.indexOf(temp)).lastModified();
 						    // if peer/node has a more recently modified version
 						    if(fileLastModified > myFileLastModified) {
+						    	fileHandler.requestFile(socket, f.getName());
+						    	Thread.sleep(1000);
 						    	fileHandler.receiveFile(socket, f);
 						    	System.out.println(f.getName() + "has been received");
 						    }else {
