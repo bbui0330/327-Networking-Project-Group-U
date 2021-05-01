@@ -9,11 +9,10 @@ public class FileHandler {
 	File directoryPath;
 
 
-    FileHandler() {
+    public FileHandler() {
     	path = System.getProperty("user.dir");	// directory user is in
     	folderPath = path + File.separator + "files";
     	directoryPath = new File(folderPath);
-
     }
 
     /**
