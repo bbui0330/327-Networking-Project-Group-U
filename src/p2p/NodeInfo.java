@@ -20,7 +20,6 @@ public class NodeInfo {
 	public void addNode(String ip) {
 		FileHandler fileHandler = new FileHandler();
 		File[] files = fileHandler.getListofFiles();
-		System.out.println(ip +"\n"+ files.toString());
 		dht.put(ip, files);
 	}
 	

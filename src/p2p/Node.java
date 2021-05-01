@@ -6,6 +6,7 @@ import java.net.ConnectException;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.concurrent.ConcurrentSkipListSet;
 
@@ -51,7 +52,13 @@ public class Node extends Thread {
 			serverNodeInfo.receiveDHT();
 			serverNodeInfo.sendDHT();
 			Hashtable<String, File[]> dhtServer = serverNodeInfo.getDHT();
-			System.out.println("The set is: " + dhtServer.toString());
+			System.out.println("\nDHT:");
+			Enumeration names = dhtServer.keys();
+			while(names.hasMoreElements()) {
+				String key = (String) names.nextElement();
+				System.out.println("Key: " +key+ " & Value: " +
+						dhtServer.get(key));
+			}
 			
 			// receive file
 			fileHandler.receiveFile(server);
@@ -77,7 +84,13 @@ public class Node extends Thread {
 					peerNodeInfo.receiveDHT();
 					
 					Hashtable<String, File[]> dhtPeer = peerNodeInfo.getDHT();
-					System.out.println("The set is: " + dhtPeer.toString());
+					System.out.println("\nDHT:");
+					Enumeration dhtNames = dhtPeer.keys();
+					while(dhtNames.hasMoreElements()) {
+						String key = (String) dhtNames.nextElement();
+						System.out.println("Key: " +key+ " & Value: " +
+								dhtPeer.get(key));
+					}
 					
 					// send file
 					fileHandler.sendFile(peer);
