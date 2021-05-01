@@ -1,5 +1,6 @@
 package p2p;
 
+import java.io.File;
 import java.util.concurrent.ConcurrentSkipListSet;
 
 public class Program {
@@ -15,10 +16,12 @@ public class Program {
 		  networkIps.forEach(ip -> System.out.println(ip));
 		 
 		  System.out.println("");
-//		  ClientServer network = new ClientServer(networkIps.size());
 		  
 //		  Node server = new Node("Server", 6066, networkIps);
 		  Node client = new Node("Client", 6066, networkIps);
+		  
+		  // file
+		  
 	}
 
 }
