@@ -17,8 +17,10 @@ public class Program {
 		 
 		  System.out.println("");
 		  
-		  Node server = new Node("Server", 6066, networkIps);
-//		  Node client = new Node("Client", 6066, networkIps);
+//		  Node server = new Node("Server", 6066, networkIps);
+//		  server.start();
+		  Node client = new Node("Client", 6066, networkIps);
+		  client.start();
 		  
 		  
 		  
