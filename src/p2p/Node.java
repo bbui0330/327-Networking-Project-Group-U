@@ -84,7 +84,15 @@ public class Node {
 	}
 	
 	private void sendFile(Socket socket) throws IOException {
+		BufferedOutputStream bos = new BufferedOutputStream(socket.getOutputStream());
+		DataOutputStream dos = new DataOutputStream(bos);
+		
+		dos.writeInt(getListofFiles().length);
+		
 		for(File myFile: getListofFiles()) {
+			String name = myFile.getName();
+		    dos.writeUTF(name);
+			
 			byte [] mybytearrayclient  = new byte [(int)myFile.length()];
 			FileInputStream fis = new FileInputStream(myFile);
 			BufferedInputStream bis = new BufferedInputStream(fis);
@@ -98,6 +106,14 @@ public class Node {
 	}
 	
 	private void receiveFile(Socket socket, int fileSize, String fileName) throws IOException {
+		BufferedInputStream bis = new BufferedInputStream(socket.getInputStream());
+		DataInputStream dis = new DataInputStream(bis);
+
+		int filesCount = dis.readInt();
+		File[] files = new File[filesCount];
+		
+		for(int i = 0; i < filesCount; i++) {
+		
 		byte [] mybytearray  = new byte [fileSize];
 		InputStream is = socket.getInputStream();
 		FileOutputStream fos = new FileOutputStream(fileName);
@@ -115,5 +131,7 @@ public class Node {
 		bos.flush();
 		System.out.println("File " + fileName
 				+ " downloaded (" + current + " bytes read)");
+		}
 	}
+	
 }
