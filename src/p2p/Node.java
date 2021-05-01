@@ -6,6 +6,7 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -26,7 +27,7 @@ public class Node {
 	String folderPath = path + File.separator + "files";
 	File directoryPath = new File(folderPath);
 
-	public final static int FILE_SIZE = 6022386; // file size temporary hard coded
+	public final int FILE_SIZE = 6022386; // file size temporary hard coded
 	// should bigger than the file to be downloaded
 	String FILE =  folderPath + File.separator + "temp1.txt";
 
@@ -39,24 +40,22 @@ public class Node {
 			Socket server = serverSock.accept();
 			System.out.println("Connected");
 
-			while(server.isConnected()) {
-				// receive file
-				receiveFile(server, FILE_SIZE, FILE);
-			}
+			// receive file
+			receiveFile(server, this.FILE_SIZE, this.FILE);
 
 			server.close();
 			break;
 		case "Client":
 			this.port = port;
 			System.out.println("Waiting for connection ...");
-			Socket client = null;
+			Socket client;
 			for (String ip : networkIps) {
 				try {
 					client = new Socket(ip, port);
 					System.out.println("Connected");
 
 					// send file
-					sendfile(client);
+					sendFile(client);
 					
 					client.close();
 				} catch (ConnectException e) {
@@ -84,8 +83,7 @@ public class Node {
 		return directoryPath.listFiles();
 	}
 	
-	private void sendfile(Socket socket) throws IOException {
-		// send file
+	private void sendFile(Socket socket) throws IOException {
 		for(File myFile: getListofFiles()) {
 			byte [] mybytearrayclient  = new byte [(int)myFile.length()];
 			FileInputStream fis = new FileInputStream(myFile);
@@ -100,7 +98,6 @@ public class Node {
 	}
 	
 	private void receiveFile(Socket socket, int fileSize, String fileName) throws IOException {
-		// receive file
 		byte [] mybytearray  = new byte [fileSize];
 		InputStream is = socket.getInputStream();
 		FileOutputStream fos = new FileOutputStream(fileName);
