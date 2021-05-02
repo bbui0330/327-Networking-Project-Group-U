@@ -61,14 +61,14 @@ public class Node extends Thread {
 			
 			while(true) {
 				fileComparison(serverNodeInfo, server);
-				server.close();		// closes the socket
+//				server.close();		// closes the socket
 			}
 
 //			server.close();		// closes the socket
 //			break;
 		case "Client":
 			System.out.println("Waiting for connection ...");
-			Socket peer;	// creates client socket
+			Socket peer = null;	// creates client socket
 			// checks every IP in the network for the peer that is acting as a server
 			for (String ip : networkIps) {
 				try {
@@ -97,11 +97,11 @@ public class Node extends Thread {
 					//							}
 					//						}
 					//					}
-					peer.close();		// closes the socket
 				} catch (ConnectException e) {
 					// do nothing
 				}
 			}
+			peer.close();		// closes the socket
 			break;
 		}
 	}

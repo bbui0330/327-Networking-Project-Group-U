@@ -72,14 +72,25 @@ public class NodeInfo {
 	 * @throws IOException
 	 * @throws ClassNotFoundException
 	 */
-	public void receiveDHT() throws IOException, ClassNotFoundException {
-		InputStream is = socket.getInputStream();
-		ObjectInputStream ois = new ObjectInputStream(is);
-		Hashtable<String, File[]> temp = (Hashtable<String, File[]>) ois.readObject();
-		for(String s: temp.keySet()) {
-			if(!dht.containsKey(s)) {
-				dht.put(s, temp.get(s));
+	public void receiveDHT() throws ClassNotFoundException {
+		System.out.println("Line 1");
+		InputStream is;
+		try {
+			is = socket.getInputStream();
+			System.out.println("Line 2");
+			ObjectInputStream ois = new ObjectInputStream(is);
+			System.out.println("Line 3");
+			Hashtable<String, File[]> temp = (Hashtable<String, File[]>) ois.readObject();
+			System.out.println("Line 4");
+			for(String s: temp.keySet()) {
+				if(!dht.containsKey(s)) {
+					dht.put(s, temp.get(s));
+				}
 			}
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
+		
 	}
 }
