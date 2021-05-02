@@ -55,7 +55,7 @@ public class FileHandler {
 		    // prints the files that have been received
 		    System.out.println("File " + fileName + " downloaded");
 
-//		    bos.close();	// closes BufferedOutputStream
+		    bos.close();	// closes BufferedOutputStream
 		}
 	}
 
@@ -105,11 +105,11 @@ public class FileHandler {
 			bos.write(theByte);
 		}
 
-//		bis.close();	// closes BufferedInputStream
+		bis.close();	// closes BufferedInputStream
 		System.out.println("Sent " + name);
 //		}
 
-//		dos.close();	// closes DataOutputStream
+		dos.close();	// closes DataOutputStream
 	}
 	
 	/**
@@ -167,5 +167,34 @@ public class FileHandler {
             }
         }
         return true;
+	}
+
+	public void receiveFile(Socket socket, File file) throws IOException {
+		byte [] mybytearray  = new byte [(int)file.length()];
+		InputStream is = socket.getInputStream();
+		FileOutputStream fos = new FileOutputStream(file);
+		BufferedOutputStream bos = new BufferedOutputStream(fos);
+		int bytesRead = is.read(mybytearray,0,mybytearray.length);
+		int current = bytesRead;
+
+		do {
+			bytesRead =
+					is.read(mybytearray, current, (mybytearray.length-current));
+			if(bytesRead >= 0) current += bytesRead;
+		} while(bytesRead > -1);
+
+		bos.write(mybytearray, 0 , current);
+		bos.flush();
+	}
+	
+	public void sendFile(Socket socket, File file) throws IOException {
+        byte [] mybytearray  = new byte [(int)file.length()];
+        FileInputStream fis = new FileInputStream(file);
+        BufferedInputStream bis = new BufferedInputStream(fis);
+        bis.read(mybytearray,0,mybytearray.length);
+        OutputStream os = socket.getOutputStream();
+        System.out.println("Sending " + file.getName() + "(" + mybytearray.length + " bytes)");
+        os.write(mybytearray,0,mybytearray.length);
+        os.flush();
 	}
 }

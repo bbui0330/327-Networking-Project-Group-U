@@ -134,11 +134,14 @@ public class Node extends Thread {
 		for(int j = 0; j < keys.length; j++) {
 			// compares my files to the other nodes/peers in the network
 			if(!keys[j].equals(this.ip)) {
+				// does comparison while the list of files are not equal
 				while(!dht.get(keys[j]).equals(files)) {
+					// my peer has more files than I do
 					if(dht.get(keys[j]).length >= files.size()) {
 						for(File f: dht.get(keys[j])) {
 							// changes absolute path to my absolute path to check if I have the file
 							File temp = new File(path + File.separator + f.getName());
+							// my files list has the same file as my peer
 							if(files.contains(temp)) {
 								if(!fileHandler.compareFiles(files.get(files.indexOf(temp)), f)) {
 									//Getting the last modified time
@@ -148,17 +151,15 @@ public class Node extends Thread {
 									if(fileLastModified > myFileLastModified) {
 //							    	fileHandler.requestFile(socket, f.getName());
 ////							    	sleep(1000);
-										fileHandler.receiveFiles(socket);
-										System.out.println("Updated to your file");
+										fileHandler.receiveFile(socket, f);
 									}else {
-										fileHandler.sendFiles(socket, files.get(files.indexOf(temp)));
-										System.out.println("You have my file");
+										fileHandler.sendFile(socket, files.get(files.indexOf(temp)));
 									}
 								}
 							}else {	// I do not have the file
 //							fileHandler.requestFile(socket, f.getName());
 ////					    	sleep(1000);
-								fileHandler.receiveFiles(socket);
+								fileHandler.receiveFile(socket, f);
 								System.out.println("I copied your file");
 							}
 							nodeInfo.updateNode(InetAddress.getLocalHost().getHostAddress().toString());
@@ -188,10 +189,10 @@ public class Node extends Thread {
 									if(fileLastModified > myFileLastModified) {
 //							    	fileHandler.requestFile(socket, f.getName());
 ////							    	sleep(1000);
-										fileHandler.receiveFiles(socket);
+										fileHandler.receiveFile(socket, temp);
 										System.out.println("Updated to my file");
 									}else {
-										fileHandler.sendFiles(socket, dht.get(keys[j])[n]);
+										fileHandler.sendFile(socket, dht.get(keys[j])[n]);
 										System.out.println("Updated to your file");
 									}
 								}
@@ -199,7 +200,7 @@ public class Node extends Thread {
 //							fileHandler.requestFile(socket, f.getName());
 ////					    	sleep(1000);
 								System.out.println("I am sending you my file");
-								fileHandler.sendFiles(socket, dht.get(keys[j])[n]);
+								fileHandler.sendFile(socket, dht.get(keys[j])[n]);
 								System.out.println("I sent you my file");
 							}
 						}
@@ -215,7 +216,7 @@ public class Node extends Thread {
 //								}
 //								else {
 //									System.out.println("This file is NOT in here");
-//									fileHandler.sendFiles(socket, files.get(k));
+//									fileHandler.sendFile(socket, files.get(k));
 //								}
 //							}
 //							nodeInfo.updateNode(InetAddress.getLocalHost().getHostAddress().toString());
