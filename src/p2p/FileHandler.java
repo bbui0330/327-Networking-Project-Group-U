@@ -100,100 +100,6 @@ public class FileHandler {
 		dos.close();	// closes DataOutputStream
 	}
     
-//    
-//    /**
-//	 * Receives the files from another node/peer
-//	 * @param socket: socket associated with the current node/peer
-//	 * @throws IOException
-//	 */
-//	public void receiveFiles(Socket socket) throws IOException {
-//		// Creates a BufferedInputStream and saves input stream for later use
-//		// socket.getInputStream() - returns an input stream for the socket
-//		BufferedInputStream bis = new BufferedInputStream(socket.getInputStream());
-//		// Creates a DataInputStream that uses the BufferedInputStream
-//		DataInputStream dis = new DataInputStream(bis);
-//
-//		int filesCount = dis.readInt();	// gets the number of files
-//		// creates a list that is the same size as the number of files received
-//		File[] files = new File[filesCount];
-//		
-//		for(int i = 0; i < filesCount; i++) {
-//			long fileLength = dis.readLong();	// gets the file size
-//		    String fileName = dis.readUTF();	// gets the file name
-//
-//		    // creates a new file and adds it to files list
-//		    files[i] = new File(getPath() + File.separator + fileName);
-//
-//		    // Creates FileOutputStream to write to the file
-//		    FileOutputStream fos = new FileOutputStream(files[i]);
-//		    // Creates BufferedOutputStream to write data to FileOutputStream
-//		    BufferedOutputStream bos = new BufferedOutputStream(fos);
-//
-//		    for(int j = 0; j < fileLength; j++) {
-//		    	// Writes the specified byte to the BufferedOutputStream
-//		    	bos.write(bis.read());
-//		    }
-//		    
-//		    // prints the files that have been received
-//		    System.out.println("File " + fileName + " downloaded");
-//
-//		    bos.close();	// closes BufferedOutputStream
-//		}
-//	}
-//
-//	/**
-//	 * Sends files to another node/peer
-//	 * @param socket: socket associated with the current node/peer
-//	 * @throws IOException
-//	 */
-//	public void sendFiles(Socket socket, File file) throws IOException {
-//		/* creates a BufferedOutputStream to write data for the socket
-//		 * output stream
-//		 * socket.getOutputStream() - output stream for the socket	*/
-//		BufferedOutputStream bos = new BufferedOutputStream(socket.getOutputStream());
-//		
-//		// creates a DataOutputStream to write data for BufferedOutputStream
-//		DataOutputStream dos = new DataOutputStream(bos);
-//		
-//		// writes the number of files to DataOutputStream 
-//		// writeInt() - writes int as 4 bytes, high byte first
-////		dos.writeInt(files.length);
-//		dos.writeInt(1);	// only sending one file
-//
-////		// iterates through all the files in the specified directory
-////		for(File file : files)
-////		{
-//		long length = file.length();	// gets the file length
-//		// writes the size of the file to DataOutputStream
-//		// writeLong() - writes long as 8 bytes, high byte first
-//		dos.writeLong(length);
-//
-//		String name = file.getName();	// gets the file name
-//		// writes the name of the file to DataOutputStream
-//		// writeUTF() - writes string using modified UTF-8 encoding
-//		dos.writeUTF(name);
-//
-//		// Creates a FileInputStream by opening a connection to the file
-//		FileInputStream fis = new FileInputStream(file);
-//		// Creates a BufferedInputStream and saves fis for later use
-//		BufferedInputStream bis = new BufferedInputStream(fis);
-//
-//		int theByte = 0;
-//
-//		// read returns -1 at the end-of-file
-//		// bis.read() - the number of bytes read
-//		while((theByte = bis.read()) != -1) {
-//			// writes the specified byte to this buffered output stream
-//			bos.write(theByte);
-//		}
-//
-//		bis.close();	// closes BufferedInputStream
-//		System.out.println("Sent " + name);
-////		}
-//
-//		dos.close();	// closes DataOutputStream
-//	}
-//	
 	/**
 	 * Creates a folder if the folder does not already exist
 	 */
@@ -288,6 +194,7 @@ public class FileHandler {
 		// prints the files that have been received
 		System.out.println("File " + fileName + " downloaded");
 
+		bos.flush();
 //		bos.close();	// closes BufferedOutputStream
 	}
 	
@@ -324,38 +231,10 @@ public class FileHandler {
 			bos.write(theByte);
 		}
 
+		dos.flush();
+		bos.flush();
 //		bis.close();	// closes BufferedInputStream
 		System.out.println("Sent " + name);
 	}
-	/*
-	public void receiveFile(Socket socket, File file) throws IOException {
-		byte [] mybytearray  = new byte [(int)file.length()];
-		InputStream is = socket.getInputStream();
-		FileOutputStream fos = new FileOutputStream(file);
-		BufferedOutputStream bos = new BufferedOutputStream(fos);
-		int bytesRead = is.read(mybytearray,0,mybytearray.length);
-		int current = bytesRead;
-
-		do {
-			bytesRead =
-					is.read(mybytearray, current, (mybytearray.length-current));
-			if(bytesRead >= 0) current += bytesRead;
-		} while(bytesRead > -1);
-
-		System.out.println("Receiving " + file.getName() + "(" + mybytearray.length + " bytes)");
-		bos.write(mybytearray, 0 , current);
-		bos.flush();
-	}
 	
-	public void sendFile(Socket socket, File file) throws IOException {
-        byte [] mybytearray  = new byte [(int)file.length()];
-        FileInputStream fis = new FileInputStream(file);
-        BufferedInputStream bis = new BufferedInputStream(fis);
-        bis.read(mybytearray,0,mybytearray.length);
-        OutputStream os = socket.getOutputStream();
-        System.out.println("Sending " + file.getName() + "(" + mybytearray.length + " bytes)");
-        os.write(mybytearray,0,mybytearray.length);
-        os.flush();
-	}
-	*/
 }

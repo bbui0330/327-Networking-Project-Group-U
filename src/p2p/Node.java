@@ -49,69 +49,54 @@ public class Node extends Thread {
 			// sets IP address to the IP address of this device
 			this.ip = InetAddress.getLocalHost().getHostAddress().toString();
 
-			// creates a server socket, bound to the specified port
-			ServerSocket serverSock = new ServerSocket(port);
-			
-			Socket server = serverSock.accept();
-			System.out.println("Connected");
+			while(true) {
+				// creates a server socket, bound to the specified port
+				ServerSocket serverSock = new ServerSocket(port);
 
-			NodeInfo serverNodeInfo = new NodeInfo(server);
-			serverNodeInfo.addNode(this.ip);
-			serverNodeInfo.receiveDHT();
-			serverNodeInfo.sendDHT();
-		
-			printDht(serverNodeInfo);
-			
-//			while(true) {
+				Socket server = serverSock.accept();
+				server.setKeepAlive(true);
+				System.out.println("Connected");
+
+				NodeInfo serverNodeInfo = new NodeInfo(server);
+				serverNodeInfo.addNode(this.ip);
+				serverNodeInfo.receiveDHT();
+				serverNodeInfo.sendDHT();
+
+				printDht(serverNodeInfo);
+
 				compareFiles(serverNodeInfo, server);
 				
-//				fileComparison(serverNodeInfo, server);
-//				server.close();		// closes the socket
-//			}
-			
-//			server.close();		// closes the socket
-//			break;
-		case "Client":
-			System.out.println("Waiting for connection ...");
-			Socket peer = null;	// creates client socket
-			// checks every IP in the network for the peer that is acting as a server
-			for (String ip : networkIps) {
-				try {
-					/* creates a stream socket and connects it to the 
-					 * specified port number at the specified IP address */
-					peer = new Socket(ip, port);
-					System.out.println("Connected");
+				Thread.sleep(1000);
 
-					//
-					NodeInfo peerNodeInfo = new NodeInfo(peer);
-					peerNodeInfo.addNode(InetAddress.getLocalHost().getHostAddress().toString());
-					peerNodeInfo.sendDHT();
-					Thread.sleep(1000);
-					peerNodeInfo.receiveDHT();
-					printDht(peerNodeInfo);
+//				server.close();		// closes the socket
+			}
+		case "Client":
+			while(true) {
+				System.out.println("Waiting for connection ...");
+				Socket peer = null;	// creates client socket
+				// checks every IP in the network for the peer that is acting as a server
+				for (String ip : networkIps) {
+					try {
+						/* creates a stream socket and connects it to the 
+						 * specified port number at the specified IP address */
+						peer = new Socket(ip, port);
+						System.out.println("Connected");
+
+						NodeInfo peerNodeInfo = new NodeInfo(peer);
+						peerNodeInfo.addNode(InetAddress.getLocalHost().getHostAddress().toString());
+						peerNodeInfo.sendDHT();
+						Thread.sleep(1000);
+						peerNodeInfo.receiveDHT();
+						printDht(peerNodeInfo);
 					
-//					while(true) {
 						compareFiles(peerNodeInfo, peer);
-						//						fileComparison(peerNodeInfo, peer);
-//					}
+						peer.close();		// closes the socket
 				
-//					Hashtable<String, File[]> dht = peerNodeInfo.getDHT();
-//					// stores the list of keys (IP addresses)
-//					String[] keys = dht.keySet().toArray(new String[dht.keySet().size()]);
-//					for(int j = 0; j < keys.length; j++) {
-//						while(true) {
-//							fileComparison(peerNodeInfo, peer);
-//							if(dht.get(InetAddress.getLocalHost().getHostAddress().toString()).equals(dht.get(keys[j]))) {
-//								break;
-//							}
-//						}
-//					}
-				} catch (ConnectException e) {
-					// do nothing
+					} catch (ConnectException e) {
+						// do nothing
+					}
 				}
 			}
-			peer.close();		// closes the socket
-			break;
 		}
 	}
 	
@@ -159,39 +144,30 @@ public class Node extends Thread {
 				for (int i = 0; i < peerFiles.size(); i++) {
 					peerFileNames.add(peerFiles.get(i).getName());
 				}
-				while(true) {
-					// I have more files that my peer
-					if(files.size() > peerFiles.size()) {
-						System.out.println("I am in the IF");
-						for(File f: files) {
-							if(peerFileNames.contains(f.getName())) {
-								// my peer has the same file name in their list of files
+				// I have more files that my peer
+				if(files.size() > peerFiles.size()) {
+					System.out.println("I am in the IF");
+					for(File f: files) {
+						if(peerFileNames.contains(f.getName())) {
+							// my peer has the same file name in their list of files
 
-							}else {
-								// I will send my peer my file
-								fileHandler.sendFile(socket, f);
-							}
+						}else {
+							// I will send my peer my file
+							fileHandler.sendFile(socket, f);
 						}
-					}else if(peerFiles.size() > files.size()){	// My peer has more files than me
-						System.out.println("I am in the ELSE");
-						for(File f: peerFiles) {
-							if(fileNames.contains(f.getName())) {
-								// I have the same file name in my list of files
+					}
+				}else{	// My peer has more files than me
+					System.out.println(files.size());
+					System.out.println(peerFiles.size());
+					System.out.println("I am in the ELSE");
+					for(File f: peerFiles) {
+						if(fileNames.contains(f.getName())) {
+							// I have the same file name in my list of files
 
-							}else {
-								// I will receive the file from my peer
-								fileHandler.receiveFile(socket);
-							}
+						}else {
+							// I will receive the file from my peer
+							fileHandler.receiveFile(socket);
 						}
-					}else {
-						int all = peerFileNames.size();
-						int count = 0;
-						for(String s: peerFileNames) {
-							if(fileNames.contains(s)) {
-								count++;
-							}
-						}
-						if(count == all)	break;
 					}
 				}
 			}
