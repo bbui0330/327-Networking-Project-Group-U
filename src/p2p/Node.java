@@ -61,27 +61,8 @@ public class Node extends Thread {
 			
 			while(true) {
 				fileComparison(serverNodeInfo, server);
+				server.close();		// closes the socket
 			}
-			
-//			Hashtable<String, File[]> dhtServer = serverNodeInfo.getDHT();
-			
-//			System.out.println("\nDHT:");
-//			Enumeration names = dhtServer.keys();
-//			while(names.hasMoreElements()) {
-//				String key = (String) names.nextElement();
-//				System.out.print("Key: " +key+" & Value: ["); 
-//				for(int i = 0; i < dhtServer.get(key).length; i++) {
-//					if(i == dhtServer.get(key).length-1) {
-//						System.out.print(dhtServer.get(key)[i].getName());
-//						break;
-//					}
-//					System.out.print(dhtServer.get(key)[i].getName() + ", ");
-//				}
-//				System.out.print("]\n\n");
-//			}
-
-//			// receive file
-//			fileHandler.receiveFiles(server);
 
 //			server.close();		// closes the socket
 //			break;
@@ -101,42 +82,21 @@ public class Node extends Thread {
 					peerNodeInfo.addNode(InetAddress.getLocalHost().getHostAddress().toString());
 					peerNodeInfo.sendDHT();
 					Thread.sleep(1000);
+					System.out.println("almost there");
 					peerNodeInfo.receiveDHT();
+					System.out.println("maybe not");
 //					Hashtable<String, File[]> dht = peerNodeInfo.getDHT();
 //					// stores the list of keys (IP addresses)
 //					String[] keys = dht.keySet().toArray(new String[dht.keySet().size()]);
 //					for(int j = 0; j < keys.length; j++) {
 //						while(true) {
-							fileComparison(peerNodeInfo, peer);
-//							if(dht.get(InetAddress.getLocalHost().getHostAddress().toString()).equals(dht.get(keys[j]))) {
-//								break;
-//							}
-//						}
-//					}
-					
-					
-
-//					Hashtable<String, File[]> dhtPeer = peerNodeInfo.getDHT();
-//					System.out.println("\nDHT:");
-//					Enumeration dhtNames = dhtPeer.keys();
-//					while(dhtNames.hasMoreElements()) {
-//						String key = (String) dhtNames.nextElement();
-//						System.out.print("Key: " +key+" & Value: [ "); 
-//						for(int i = 0; i < dhtPeer.get(key).length; i++) {
-//							if(i == dhtPeer.get(key).length-1) {
-//								System.out.print(dhtPeer.get(key)[i].getName());
-//								break;
-//							}
-//							System.out.print(dhtPeer.get(key)[i].getName() + ", ");
-//						}
-//						System.out.print("]\n\n");
-//
-//					}
-					
-
-//					// send file
-//					fileHandler.sendFiles(peer);
-
+					fileComparison(peerNodeInfo, peer);
+					System.out.println("I can make it");
+					//							if(dht.get(InetAddress.getLocalHost().getHostAddress().toString()).equals(dht.get(keys[j]))) {
+					//								break;
+					//							}
+					//						}
+					//					}
 					peer.close();		// closes the socket
 				} catch (ConnectException e) {
 					// do nothing
@@ -205,8 +165,11 @@ public class Node extends Thread {
 					    	fileHandler.receiveFiles(socket);
 					    	System.out.println("I copied your file");
 						}
+						nodeInfo.updateNode(InetAddress.getLocalHost().getHostAddress().toString());
+						System.out.println("Node has been updated");
 					}
 				}else {
+					int l = -1;
 					for(int k = 0; k < files.size(); k++) {
 						try {
 							List<File> dhtFiles = new ArrayList<File>(Arrays.asList(dht.get(keys[k])));
@@ -219,14 +182,17 @@ public class Node extends Thread {
 								fileHandler.sendFiles(socket, files.get(k));
 							}
 						}catch(ArrayIndexOutOfBoundsException e) {
-							int l = k;
-							while(l < files.size()) {
-								System.out.println("This file is NOT in here");
-								fileHandler.sendFiles(socket, files.get(l));
-								l++;
-							}
+							System.out.println("This file is NOT in here");
+							System.out.println("I am here");
+							fileHandler.sendFiles(socket, files.get(k));
+							l = k+1;
+							continue;
 						}
-						
+						for(int n = l; n < files.size(); n++) {
+							System.out.println("This file is NOT in here");
+							System.out.println("I am here in the next for");
+							fileHandler.sendFiles(socket, files.get(k));
+						}
 //						// changes absolute path to my absolute path to check if I have the file
 //						File temp = new File(path + File.separator + files.get(k).getName());
 //						for(File f: dht.get(keys[k])) {
@@ -253,7 +219,8 @@ public class Node extends Thread {
 //								System.out.println("I copied your file");
 //							}
 //						}
-						
+						nodeInfo.updateNode(InetAddress.getLocalHost().getHostAddress().toString());
+						System.out.println("Node has been updated");
 					}
 				}
 			}

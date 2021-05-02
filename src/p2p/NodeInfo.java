@@ -74,7 +74,7 @@ public class NodeInfo {
 	public void receiveDHT() throws IOException, ClassNotFoundException {
 		InputStream is = socket.getInputStream();
 		ObjectInputStream ois = new ObjectInputStream(is);
-		Hashtable<String, File[]> temp = (Hashtable) ois.readObject();
+		Hashtable<String, File[]> temp = (Hashtable<String, File[]>) ois.readObject();
 		for(String s: temp.keySet()) {
 			if(!dht.containsKey(s)) {
 				dht.put(s, temp.get(s));
