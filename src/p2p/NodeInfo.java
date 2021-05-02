@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.net.InetAddress;
 import java.net.Socket;
 import java.util.Hashtable;
 
@@ -45,7 +46,7 @@ public class NodeInfo {
 		// checks if the list of files in the dht are the same as the directory
 		if(dht.get(ip) != files) {
 			// updates dht if the list is incorrect
-			dht.replace(ip, dht.get(ip), files);
+			dht.put(ip, files);
 		}
 	}
 	
@@ -73,15 +74,9 @@ public class NodeInfo {
 	 * @throws ClassNotFoundException
 	 */
 	public void receiveDHT() throws ClassNotFoundException {
-		System.out.println("Line 1");
-		InputStream is;
 		try {
-			is = socket.getInputStream();
-			System.out.println("Line 2");
-			ObjectInputStream ois = new ObjectInputStream(is);
-			System.out.println("Line 3");
+			ObjectInputStream ois = new ObjectInputStream(socket.getInputStream());
 			Hashtable<String, File[]> temp = (Hashtable<String, File[]>) ois.readObject();
-			System.out.println("Line 4");
 			for(String s: temp.keySet()) {
 				if(!dht.containsKey(s)) {
 					dht.put(s, temp.get(s));
@@ -91,6 +86,6 @@ public class NodeInfo {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+
 	}
 }

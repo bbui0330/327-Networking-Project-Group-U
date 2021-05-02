@@ -51,21 +51,19 @@ public class Node extends Thread {
 			// creates a server socket, bound to the specified port
 			ServerSocket serverSock = new ServerSocket(port);
 
-			Socket server = serverSock.accept();
-			System.out.println("Connected");
-
-			NodeInfo serverNodeInfo = new NodeInfo(server);
-			serverNodeInfo.addNode(this.ip);
-			serverNodeInfo.receiveDHT();
-			serverNodeInfo.sendDHT();
-			
 			while(true) {
-				fileComparison(serverNodeInfo, server);
-//				server.close();		// closes the socket
-			}
+				Socket server = serverSock.accept();
+				System.out.println("Connected");
 
-//			server.close();		// closes the socket
-//			break;
+				NodeInfo serverNodeInfo = new NodeInfo(server);
+				serverNodeInfo.addNode(this.ip);
+				serverNodeInfo.receiveDHT();
+				serverNodeInfo.sendDHT();
+				server.close();		// closes the socket
+			
+				fileComparison(serverNodeInfo, server);
+				server.close();		// closes the socket
+			}
 		case "Client":
 			System.out.println("Waiting for connection ...");
 			Socket peer = null;	// creates client socket
@@ -82,16 +80,13 @@ public class Node extends Thread {
 					peerNodeInfo.addNode(InetAddress.getLocalHost().getHostAddress().toString());
 					peerNodeInfo.sendDHT();
 					Thread.sleep(1000);
-					System.out.println("almost there");
 					peerNodeInfo.receiveDHT();
-					System.out.println("maybe not");
 //					Hashtable<String, File[]> dht = peerNodeInfo.getDHT();
 //					// stores the list of keys (IP addresses)
 //					String[] keys = dht.keySet().toArray(new String[dht.keySet().size()]);
 //					for(int j = 0; j < keys.length; j++) {
 //						while(true) {
 					fileComparison(peerNodeInfo, peer);
-					System.out.println("I can make it");
 					//							if(dht.get(InetAddress.getLocalHost().getHostAddress().toString()).equals(dht.get(keys[j]))) {
 					//								break;
 					//							}
@@ -133,7 +128,7 @@ public class Node extends Thread {
 		// stores the list of keys (IP addresses)
 		String[] keys = dht.keySet().toArray(new String[dht.keySet().size()]);
 		// stores a list of files from my device
-		List<File> files = new ArrayList<File>(Arrays.asList(dht.get(InetAddress.getLocalHost().getHostAddress().toString())));
+		List<File> files = new ArrayList<File>(Arrays.asList(fileHandler.getListofFiles()));
 		// stores the absolute path of the folder
 		String path = fileHandler.getPath();
 		for(int j = 0; j < keys.length; j++) {
@@ -169,56 +164,24 @@ public class Node extends Thread {
 						System.out.println("Node has been updated");
 					}
 				}else {
-					int l = -1;
-					for(int k = 0; k < files.size(); k++) {
-						try {
-							List<File> dhtFiles = new ArrayList<File>(Arrays.asList(dht.get(keys[k])));
-							File tempFile = new File(fileHandler.getPath() + File.separator + dhtFiles.get(k).getName());
-							if(files.contains(tempFile)) {
-								System.out.println("This file is in here");
+					for(int m = 0; m < keys.length; m++) {
+						// compares my files to the other nodes/peers in the network
+						if(!keys[m].equals(this.ip)) {
+							List<File> dhtFiles = new ArrayList<File>(Arrays.asList(dht.get(keys[m])));
+							Path peerPath = Paths.get(dhtFiles.get(0).toURI()); 
+							int count = 0;
+							for(int k = 0; k < files.size(); k++) {
+								count++;
+								File tempFile = new File(peerPath + File.separator + files.get(k).getName());
+								if(dhtFiles.contains(tempFile)) {
+									System.out.println("This file is in here");
+								}
+								else {
+									System.out.println("This file is NOT in here");
+									fileHandler.sendFiles(socket, files.get(k));
+								}
 							}
-							else {
-								System.out.println("This file is NOT in here");
-								fileHandler.sendFiles(socket, files.get(k));
-							}
-						}catch(ArrayIndexOutOfBoundsException e) {
-							System.out.println("This file is NOT in here");
-							System.out.println("I am here");
-							fileHandler.sendFiles(socket, files.get(k));
-							l = k+1;
-							continue;
 						}
-						for(int n = l; n < files.size(); n++) {
-							System.out.println("This file is NOT in here");
-							System.out.println("I am here in the next for");
-							fileHandler.sendFiles(socket, files.get(k));
-						}
-//						// changes absolute path to my absolute path to check if I have the file
-//						File temp = new File(path + File.separator + files.get(k).getName());
-//						for(File f: dht.get(keys[k])) {
-//							if(files.contains(f)) {
-//								if(!fileHandler.compareFiles(f, files.get(k))) {
-//									//Getting the last modified time
-//									long fileLastModified = f.lastModified();
-//									long myFileLastModified = files.get(files.indexOf(temp)).lastModified();
-//									// if peer/node has a more recently modified version
-//									if(fileLastModified > myFileLastModified) {
-//										fileHandler.requestFile(socket, f.getName());
-//										//							    	sleep(1000);
-//										fileHandler.receiveFile(socket, f);
-//										System.out.println("Updated to your file");
-//									}else {
-//										fileHandler.sendFile(socket, files.get(files.indexOf(temp)));
-//										System.out.println("You have my file");
-//									}
-//								}
-//							}else {	// I do not have the file
-//								fileHandler.requestFile(socket, files.get(k).getName());
-//								//					    	sleep(1000);
-//								fileHandler.receiveFile(socket, files.get(k));
-//								System.out.println("I copied your file");
-//							}
-//						}
 						nodeInfo.updateNode(InetAddress.getLocalHost().getHostAddress().toString());
 						System.out.println("Node has been updated");
 					}
