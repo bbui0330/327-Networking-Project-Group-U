@@ -48,10 +48,11 @@ public class Node extends Thread {
 		case "Server": 
 			// sets IP address to the IP address of this device
 			this.ip = InetAddress.getLocalHost().getHostAddress().toString();
-			// creates a server socket, bound to the specified port
-			ServerSocket serverSock = new ServerSocket(port);
 
 			while(true) {
+				// creates a server socket, bound to the specified port
+				ServerSocket serverSock = new ServerSocket(port);
+				
 				Socket server = serverSock.accept();
 				System.out.println("Connected");
 
@@ -62,7 +63,7 @@ public class Node extends Thread {
 				server.close();		// closes the socket
 			
 				fileComparison(serverNodeInfo, server);
-				server.close();		// closes the socket
+//				server.close();		// closes the socket
 			}
 		case "Client":
 			System.out.println("Waiting for connection ...");
@@ -70,28 +71,31 @@ public class Node extends Thread {
 			// checks every IP in the network for the peer that is acting as a server
 			for (String ip : networkIps) {
 				try {
-					/* creates a stream socket and connects it to the 
-					 * specified port number at the specified IP address */
-					peer = new Socket(ip, port);
-					System.out.println("Connected");
-
-					//
-					NodeInfo peerNodeInfo = new NodeInfo(peer);
-					peerNodeInfo.addNode(InetAddress.getLocalHost().getHostAddress().toString());
-					peerNodeInfo.sendDHT();
-					Thread.sleep(1000);
-					peerNodeInfo.receiveDHT();
-					Hashtable<String, File[]> dht = peerNodeInfo.getDHT();
-					// stores the list of keys (IP addresses)
-					String[] keys = dht.keySet().toArray(new String[dht.keySet().size()]);
-					for(int j = 0; j < keys.length; j++) {
-						while(true) {
-							fileComparison(peerNodeInfo, peer);
-							if(dht.get(InetAddress.getLocalHost().getHostAddress().toString()).equals(dht.get(keys[j]))) {
-								break;
-							}
-						}
+					while(true) {
+						/* creates a stream socket and connects it to the 
+						 * specified port number at the specified IP address */
+						peer = new Socket(ip, port);
+						System.out.println("Connected");
+	
+						//
+						NodeInfo peerNodeInfo = new NodeInfo(peer);
+						peerNodeInfo.addNode(InetAddress.getLocalHost().getHostAddress().toString());
+						peerNodeInfo.sendDHT();
+						Thread.sleep(1000);
+						peerNodeInfo.receiveDHT();
+						fileComparison(peerNodeInfo, peer);
 					}
+//					Hashtable<String, File[]> dht = peerNodeInfo.getDHT();
+//					// stores the list of keys (IP addresses)
+//					String[] keys = dht.keySet().toArray(new String[dht.keySet().size()]);
+//					for(int j = 0; j < keys.length; j++) {
+//						while(true) {
+//							fileComparison(peerNodeInfo, peer);
+//							if(dht.get(InetAddress.getLocalHost().getHostAddress().toString()).equals(dht.get(keys[j]))) {
+//								break;
+//							}
+//						}
+//					}
 				} catch (ConnectException e) {
 					// do nothing
 				}
