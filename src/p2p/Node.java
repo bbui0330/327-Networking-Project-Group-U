@@ -162,27 +162,22 @@ public class Node extends Thread {
 					}
 					// I have more files that my peer
 					if(files.size() > peerFiles.size()) {
-
+						System.out.println("I am in the IF");
 						for(File f: files) {
 							if(peerFileNames.contains(f.getName())) {
 								// my peer has the same file name in their list of files
-								System.out.println("Peer files: ");
-								peerFileNames.forEach(System.out::print);
-								System.out.println("\n\nMy files: ");
-								fileNames.forEach(System.out::print);
+								
 							}else {
 								// I will send my peer my file
 								fileHandler.sendFile(socket, f);
 							}
 						}
 					}else{	// My peer has more files than me
+						System.out.println("I am in the ELSE");
 						for(File f: peerFiles) {
 							if(fileNames.contains(f.getName())) {
 								// I have the same file name in my list of files
-								System.out.println("Peer files: ");
-								peerFileNames.forEach(System.out::print);
-								System.out.println("\n\nMy files: ");
-								fileNames.forEach(System.out::print);
+
 							}else {
 								// I will receive the file from my peer
 								Thread.sleep(10000);
