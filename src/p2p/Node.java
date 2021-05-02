@@ -99,6 +99,8 @@ public class Node extends Thread {
 					Thread.sleep(1000);
 					peerNodeInfo.receiveDHT();
 					
+					System.out.println("Testing");
+					
 					fileComparison(peerNodeInfo, peer);
 
 //					Hashtable<String, File[]> dhtPeer = peerNodeInfo.getDHT();
@@ -192,6 +194,7 @@ public class Node extends Thread {
 						}
 					}
 				}else {
+					System.out.println("I am here");
 					for(int k = 0; k < files.size(); k++) {
 						// changes absolute path to my absolute path to check if I have the file
 						File temp = new File(path + File.separator + files.get(k).getName());
@@ -199,13 +202,13 @@ public class Node extends Thread {
 							if(files.contains(f)) {
 								if(!fileHandler.compareFiles(f, files.get(k))) {
 									//Getting the last modified time
-									long fileLastModified = files.get(k).lastModified();
+									long fileLastModified = f.lastModified();
 									long myFileLastModified = files.get(files.indexOf(temp)).lastModified();
 									// if peer/node has a more recently modified version
 									if(fileLastModified > myFileLastModified) {
-										fileHandler.requestFile(socket, files.get(k).getName());
+										fileHandler.requestFile(socket, f.getName());
 										//							    	sleep(1000);
-										fileHandler.receiveFile(socket, files.get(k));
+										fileHandler.receiveFile(socket, f);
 										System.out.println("Updated to your file");
 									}else {
 										fileHandler.sendFile(socket, files.get(files.indexOf(temp)));
