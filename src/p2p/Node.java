@@ -44,6 +44,7 @@ public class Node extends Thread {
 	 * @throws InterruptedException 
 	 */
 	private void link() throws IOException, ClassNotFoundException, InterruptedException {
+		int newPort = port;
 		switch (type) {
 		case "Server": 
 			// sets IP address to the IP address of this device
@@ -51,7 +52,7 @@ public class Node extends Thread {
 
 			while(true) {
 				// creates a server socket, bound to the specified port
-				ServerSocket serverSock = new ServerSocket(port);
+				ServerSocket serverSock = new ServerSocket(newPort);
 
 				Socket server = serverSock.accept();
 				server.setKeepAlive(true);
@@ -66,11 +67,13 @@ public class Node extends Thread {
 
 				compareFiles(serverNodeInfo, server);
 				
+				newPort += 1;
 				Thread.sleep(1000);
 
 //				server.close();		// closes the socket
 			}
 		case "Client":
+			
 			while(true) {
 				System.out.println("Waiting for connection ...");
 				Socket peer = null;	// creates client socket
@@ -79,7 +82,7 @@ public class Node extends Thread {
 					try {
 						/* creates a stream socket and connects it to the 
 						 * specified port number at the specified IP address */
-						peer = new Socket(ip, port);
+						peer = new Socket(ip, newPort);
 						System.out.println("Connected");
 
 						NodeInfo peerNodeInfo = new NodeInfo(peer);
@@ -157,8 +160,6 @@ public class Node extends Thread {
 						}
 					}
 				}else{	// My peer has more files than me
-					System.out.println(files.size());
-					System.out.println(peerFiles.size());
 					System.out.println("I am in the ELSE");
 					for(File f: peerFiles) {
 						if(fileNames.contains(f.getName())) {
