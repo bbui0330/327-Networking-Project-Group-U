@@ -288,7 +288,7 @@ public class FileHandler {
 		// prints the files that have been received
 		System.out.println("File " + fileName + " downloaded");
 
-		bos.close();	// closes BufferedOutputStream
+//		bos.close();	// closes BufferedOutputStream
 	}
 	
 	public void sendFile(Socket socket, File file) throws IOException {
