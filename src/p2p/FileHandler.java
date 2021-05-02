@@ -143,6 +143,13 @@ public class FileHandler {
 		return directoryPath.listFiles();
 	}
 	
+	/**
+	 * Compares two files to see if content is the same
+	 * @param file1: first file to be compared
+	 * @param file2: second file to be compared
+	 * @return true if files are the same, false otherwise
+	 * @throws IOException
+	 */
 	public boolean compareFiles(File file1, File file2) throws IOException {
 		long start = System.nanoTime();
         FileChannel ch1 = new RandomAccessFile(file1, "r").getChannel();
