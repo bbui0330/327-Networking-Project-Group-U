@@ -134,8 +134,8 @@ public class Node extends Thread {
 		for(int j = 0; j < keys.length; j++) {
 			// compares my files to the other nodes/peers in the network
 			if(!keys[j].equals(this.ip)) {
-				while(dht.get(keys[j]).length != files.size()) {
-					if(dht.get(keys[j]).length > files.size()) {
+				while(!dht.get(keys[j]).equals(files)) {
+					if(dht.get(keys[j]).length >= files.size()) {
 						for(File f: dht.get(keys[j])) {
 							// changes absolute path to my absolute path to check if I have the file
 							File temp = new File(path + File.separator + f.getName());
@@ -176,8 +176,10 @@ public class Node extends Thread {
 						// stores a list of files from my device
 						List<File> peerFiles = new ArrayList<File>(Arrays.asList(dht.get(keys[j])));
 						for(int n = 0; n < files.size(); n++) {
+							System.out.println("Checking my files" + files.size());
 							File temp = new File(pathForDhtString + File.separator + files.get(n).getName());
 							if(peerFiles.contains(temp)) {
+								System.out.println("You have my file");
 								if(!fileHandler.compareFiles(dht.get(keys[j])[n], files.get(n))) {
 									//Getting the last modified time
 									long myFileLastModified = files.get(n).lastModified();
@@ -196,6 +198,7 @@ public class Node extends Thread {
 							}else {	// You do not have the file
 //							fileHandler.requestFile(socket, f.getName());
 ////					    	sleep(1000);
+								System.out.println("I am sending you my file");
 								fileHandler.sendFiles(socket, dht.get(keys[j])[n]);
 								System.out.println("I sent you my file");
 							}

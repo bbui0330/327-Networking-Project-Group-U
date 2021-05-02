@@ -55,7 +55,7 @@ public class FileHandler {
 		    // prints the files that have been received
 		    System.out.println("File " + fileName + " downloaded");
 
-		    bos.close();	// closes BufferedOutputStream
+//		    bos.close();	// closes BufferedOutputStream
 		}
 	}
 
@@ -105,11 +105,11 @@ public class FileHandler {
 			bos.write(theByte);
 		}
 
-		bis.close();	// closes BufferedInputStream
+//		bis.close();	// closes BufferedInputStream
 		System.out.println("Sent " + name);
 //		}
 
-		dos.close();	// closes DataOutputStream
+//		dos.close();	// closes DataOutputStream
 	}
 	
 	/**
