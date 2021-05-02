@@ -64,6 +64,7 @@ public class NodeInfo {
 	public void sendDHT() throws IOException {
 		ObjectOutputStream oos = new ObjectOutputStream(socket.getOutputStream());
         oos.writeObject(dht);
+        oos.flush();
 	}
 
 	/**
