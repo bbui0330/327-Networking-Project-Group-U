@@ -111,8 +111,9 @@ public class Node extends Thread {
 	 * @param socket
 	 * @throws IOException
 	 * @throws InterruptedException 
+	 * @throws ClassNotFoundException 
 	 */
-	private void fileComparison(NodeInfo nodeInfo, Socket socket) throws IOException, InterruptedException {
+	private void fileComparison(NodeInfo nodeInfo, Socket socket) throws IOException, InterruptedException, ClassNotFoundException {
 		Hashtable<String, File[]> dht = nodeInfo.getDHT();	// gets the dht table
 		System.out.println("\nDHT:");
 		Enumeration dhtNames = dht.keys();
@@ -168,6 +169,10 @@ public class Node extends Thread {
 							}
 							nodeInfo.updateNode(InetAddress.getLocalHost().getHostAddress().toString());
 							System.out.println("Node has been updated");
+							nodeInfo.sendDHT();
+							Thread.sleep(1000);
+							nodeInfo.receiveDHT();
+							
 						}
 
 					}else {
@@ -207,6 +212,11 @@ public class Node extends Thread {
 								fileHandler.sendFile(socket, dht.get(keys[j])[n]);
 								System.out.println("I sent you my file");
 							}
+							nodeInfo.updateNode(InetAddress.getLocalHost().getHostAddress().toString());
+							System.out.println("Node has been updated");
+							nodeInfo.sendDHT();
+							Thread.sleep(1000);
+							nodeInfo.receiveDHT();
 						}
 //						for(int m = 0; m < keys.length; m++) {
 //							// compares my files to the other nodes/peers in the network
