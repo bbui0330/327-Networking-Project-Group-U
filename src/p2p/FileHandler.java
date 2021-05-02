@@ -324,7 +324,7 @@ public class FileHandler {
 			bos.write(theByte);
 		}
 
-		bis.close();	// closes BufferedInputStream
+//		bis.close();	// closes BufferedInputStream
 		System.out.println("Sent " + name);
 	}
 	/*
