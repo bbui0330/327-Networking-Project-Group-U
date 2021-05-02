@@ -62,12 +62,13 @@ public class Node extends Thread {
 		
 			printDht(serverNodeInfo);
 			
-			while(true) {
+//			while(true) {
 				compareFiles(serverNodeInfo, server);
 				
 //				fileComparison(serverNodeInfo, server);
 //				server.close();		// closes the socket
-			}
+//			}
+			
 //			server.close();		// closes the socket
 //			break;
 		case "Client":
@@ -88,10 +89,12 @@ public class Node extends Thread {
 					Thread.sleep(1000);
 					peerNodeInfo.receiveDHT();
 					printDht(peerNodeInfo);
-					while(true) {
+					
+//					while(true) {
 						compareFiles(peerNodeInfo, peer);
 						//						fileComparison(peerNodeInfo, peer);
-					}
+//					}
+				
 //					Hashtable<String, File[]> dht = peerNodeInfo.getDHT();
 //					// stores the list of keys (IP addresses)
 //					String[] keys = dht.keySet().toArray(new String[dht.keySet().size()]);
@@ -137,52 +140,54 @@ public class Node extends Thread {
 	
 	
 	private void compareFiles(NodeInfo nodeInfo, Socket socket) throws IOException, InterruptedException {
-		Hashtable<String, File[]> dht = nodeInfo.getDHT();	// gets the dht table
-		// stores the list of keys (IP addresses)
-		String[] keys = dht.keySet().toArray(new String[dht.keySet().size()]);
-		// stores a list of files from my device
-		List<File> files = new ArrayList<File>(Arrays.asList(fileHandler.getListofFiles()));
-		List<String> fileNames = new ArrayList<>();
-		for (int i = 0; i < files.size(); i++) {
-			fileNames.add(files.get(i).getName());
-		}
+		while(true) {
+			Hashtable<String, File[]> dht = nodeInfo.getDHT();	// gets the dht table
+			// stores the list of keys (IP addresses)
+			String[] keys = dht.keySet().toArray(new String[dht.keySet().size()]);
+			// stores a list of files from my device
+			List<File> files = new ArrayList<File>(Arrays.asList(fileHandler.getListofFiles()));
+			List<String> fileNames = new ArrayList<>();
+			for (int i = 0; i < files.size(); i++) {
+				fileNames.add(files.get(i).getName());
+			}
 
-		for(int j = 0; j < keys.length; j++) {
-			// compares my files to the other nodes/peers in the network
-			if(!keys[j].equals(this.ip)) {
-				// stores a list of files from my device
-				List<File> peerFiles = new ArrayList<File>(Arrays.asList(dht.get(keys[j])));
-				List<String> peerFileNames = new ArrayList<>();
-				for (int i = 0; i < peerFiles.size(); i++) {
-					peerFileNames.add(peerFiles.get(i).getName());
-				}
-				// I have more files that my peer
-				if(files.size() > peerFiles.size()) {
-					
-					for(File f: files) {
-						if(peerFileNames.contains(f.getName())) {
-							// my peer has the same file name in their list of files
-							System.out.println("Peer files: ");
-							peerFileNames.forEach(System.out::print);
-							System.out.println("\n\nMy files: ");
-							fileNames.forEach(System.out::print);
-						}else {
-							// I will send my peer my file
-							fileHandler.sendFile(socket, f);
-						}
+			for(int j = 0; j < keys.length; j++) {
+				// compares my files to the other nodes/peers in the network
+				if(!keys[j].equals(this.ip)) {
+					// stores a list of files from my device
+					List<File> peerFiles = new ArrayList<File>(Arrays.asList(dht.get(keys[j])));
+					List<String> peerFileNames = new ArrayList<>();
+					for (int i = 0; i < peerFiles.size(); i++) {
+						peerFileNames.add(peerFiles.get(i).getName());
 					}
-				}else{	// My peer has more files than me
-					for(File f: peerFiles) {
-						if(fileNames.contains(f.getName())) {
-							// I have the same file name in my list of files
-							System.out.println("Peer files: ");
-							peerFileNames.forEach(System.out::print);
-							System.out.println("\n\nMy files: ");
-							fileNames.forEach(System.out::print);
-						}else {
-							// I will receive the file from my peer
-							Thread.sleep(10000);
-							fileHandler.receiveFile(socket, f);
+					// I have more files that my peer
+					if(files.size() > peerFiles.size()) {
+
+						for(File f: files) {
+							if(peerFileNames.contains(f.getName())) {
+								// my peer has the same file name in their list of files
+								System.out.println("Peer files: ");
+								peerFileNames.forEach(System.out::print);
+								System.out.println("\n\nMy files: ");
+								fileNames.forEach(System.out::print);
+							}else {
+								// I will send my peer my file
+								fileHandler.sendFile(socket, f);
+							}
+						}
+					}else{	// My peer has more files than me
+						for(File f: peerFiles) {
+							if(fileNames.contains(f.getName())) {
+								// I have the same file name in my list of files
+								System.out.println("Peer files: ");
+								peerFileNames.forEach(System.out::print);
+								System.out.println("\n\nMy files: ");
+								fileNames.forEach(System.out::print);
+							}else {
+								// I will receive the file from my peer
+								Thread.sleep(10000);
+								fileHandler.receiveFile(socket, f);
+							}
 						}
 					}
 				}
