@@ -260,6 +260,74 @@ public class FileHandler {
         return true;
 	}
 
+	
+	public void receiveFile(Socket socket) throws IOException {
+		// Creates a BufferedInputStream and saves input stream for later use
+		// socket.getInputStream() - returns an input stream for the socket
+		BufferedInputStream bis = new BufferedInputStream(socket.getInputStream());
+		// Creates a DataInputStream that uses the BufferedInputStream
+		DataInputStream dis = new DataInputStream(bis);
+
+
+		long fileLength = dis.readLong();	// gets the file size
+		String fileName = dis.readUTF();	// gets the file name
+
+		// creates a new file and adds it to files list
+		File file = new File(getPath() + File.separator + fileName);
+
+		// Creates FileOutputStream to write to the file
+		FileOutputStream fos = new FileOutputStream(file);
+		// Creates BufferedOutputStream to write data to FileOutputStream
+		BufferedOutputStream bos = new BufferedOutputStream(fos);
+
+		for(int j = 0; j < fileLength; j++) {
+			// Writes the specified byte to the BufferedOutputStream
+			bos.write(bis.read());
+		}
+
+		// prints the files that have been received
+		System.out.println("File " + fileName + " downloaded");
+
+		bos.close();	// closes BufferedOutputStream
+	}
+	
+	public void sendFile(Socket socket, File file) throws IOException {
+		/* creates a BufferedOutputStream to write data for the socket
+		 * output stream
+		 * socket.getOutputStream() - output stream for the socket	*/
+		BufferedOutputStream bos = new BufferedOutputStream(socket.getOutputStream());
+		
+		// creates a DataOutputStream to write data for BufferedOutputStream
+		DataOutputStream dos = new DataOutputStream(bos);
+
+		long length = file.length();	// gets the file length
+		// writes the size of the file to DataOutputStream
+		// writeLong() - writes long as 8 bytes, high byte first
+		dos.writeLong(length);
+
+		String name = file.getName();	// gets the file name
+		// writes the name of the file to DataOutputStream
+		// writeUTF() - writes string using modified UTF-8 encoding
+		dos.writeUTF(name);
+
+		// Creates a FileInputStream by opening a connection to the file
+		FileInputStream fis = new FileInputStream(file);
+		// Creates a BufferedInputStream and saves fis for later use
+		BufferedInputStream bis = new BufferedInputStream(fis);
+
+		int theByte = 0;
+
+		// read returns -1 at the end-of-file
+		// bis.read() - the number of bytes read
+		while((theByte = bis.read()) != -1) {
+			// writes the specified byte to this buffered output stream
+			bos.write(theByte);
+		}
+
+		bis.close();	// closes BufferedInputStream
+		System.out.println("Sent " + name);
+	}
+	/*
 	public void receiveFile(Socket socket, File file) throws IOException {
 		byte [] mybytearray  = new byte [(int)file.length()];
 		InputStream is = socket.getInputStream();
@@ -289,4 +357,5 @@ public class FileHandler {
         os.write(mybytearray,0,mybytearray.length);
         os.flush();
 	}
+	*/
 }
