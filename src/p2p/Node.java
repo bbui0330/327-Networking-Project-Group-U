@@ -172,7 +172,7 @@ public class Node extends Thread {
 							
 						}else {
 							// I will receive the file from my peer
-							Thread.sleep(1000);
+							Thread.sleep(10000);
 							fileHandler.receiveFile(socket, f);
 						}
 					}
