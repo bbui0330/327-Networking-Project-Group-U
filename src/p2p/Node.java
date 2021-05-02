@@ -102,17 +102,17 @@ public class Node extends Thread {
 					peerNodeInfo.sendDHT();
 					Thread.sleep(1000);
 					peerNodeInfo.receiveDHT();
-					Hashtable<String, File[]> dht = peerNodeInfo.getDHT();
-					// stores the list of keys (IP addresses)
-					String[] keys = dht.keySet().toArray(new String[dht.keySet().size()]);
-					for(int j = 0; j < keys.length; j++) {
-						while(true) {
+//					Hashtable<String, File[]> dht = peerNodeInfo.getDHT();
+//					// stores the list of keys (IP addresses)
+//					String[] keys = dht.keySet().toArray(new String[dht.keySet().size()]);
+//					for(int j = 0; j < keys.length; j++) {
+//						while(true) {
 							fileComparison(peerNodeInfo, peer);
-							if(dht.get(InetAddress.getLocalHost().getHostAddress().toString()).equals(dht.get(keys[j]))) {
-								break;
-							}
-						}
-					}
+//							if(dht.get(InetAddress.getLocalHost().getHostAddress().toString()).equals(dht.get(keys[j]))) {
+//								break;
+//							}
+//						}
+//					}
 					
 					
 
@@ -219,8 +219,12 @@ public class Node extends Thread {
 								fileHandler.sendFiles(socket, files.get(k));
 							}
 						}catch(ArrayIndexOutOfBoundsException e) {
-							System.out.println("This file is NOT in here");
-							fileHandler.sendFiles(socket, files.get(k));
+							int l = k;
+							while(l < files.size()) {
+								System.out.println("This file is NOT in here");
+								fileHandler.sendFiles(socket, files.get(l));
+								l++;
+							}
 						}
 						
 //						// changes absolute path to my absolute path to check if I have the file
