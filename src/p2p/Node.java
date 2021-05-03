@@ -164,18 +164,18 @@ public class Node extends Thread {
 					out.writeUTF(s); 
 					DataInputStream in= new
 							DataInputStream(socket.getInputStream()); 
-					while(in.available() <= 0) {
-						// do nothing
-					}
-					// available() - approx. number of bytes that can be read 
-					if(in.available()>0) {
+//					while(in.available() <= 0) {
+//						// do nothing
+//					}
+//					// available() - approx. number of bytes that can be read 
+//					if(in.available()>0) {
 						String receivedMessage = in.readUTF();
 						if(receivedMessage.equalsIgnoreCase("Sending")) {
 							// I will receive my peer my file
 							System.out.println("Receiving file ...");
 							fileHandler.receiveFile(socket);
 						}
-					}
+//					}
 				}
 				
 				// updates node with current files
@@ -202,8 +202,8 @@ public class Node extends Thread {
 					DataOutputStream out3 =new DataOutputStream(socket.getOutputStream());
 					out3.writeUTF("Done");
 					out3.flush();
-					out3.close();
 					System.out.println("DONE");
+					
 					sendMissing(socket, nodeInfo);
 				}
 				
@@ -217,11 +217,11 @@ public class Node extends Thread {
 			String fileName = "";
 			DataInputStream in= new
 					DataInputStream(socket.getInputStream()); 
-			while(in.available() <= 0) {
-				// do nothing
-			}
-			// available() - approx. number of bytes that can be read 
-			if(in.available()>0) {
+//			while(in.available() <= 0) {
+//				// do nothing
+//			}
+//			// available() - approx. number of bytes that can be read 
+//			if(in.available()>0) {
 				fileName = in.readUTF();
 				System.out.println(fileName);
 				if(fileName.equalsIgnoreCase("Done")) {
@@ -246,7 +246,7 @@ public class Node extends Thread {
 					fileHandler.sendFile(socket, file);
 				}
 			}
-		}
+//		}
 		
 	}
 	
