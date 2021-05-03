@@ -164,18 +164,12 @@ public class Node extends Thread {
 					out.writeUTF(s); 
 					DataInputStream in= new
 							DataInputStream(socket.getInputStream()); 
-//					while(in.available() <= 0) {
-//						// do nothing
-//					}
-//					// available() - approx. number of bytes that can be read 
-//					if(in.available()>0) {
-						String receivedMessage = in.readUTF();
-						if(receivedMessage.equalsIgnoreCase("Sending")) {
-							// I will receive my peer my file
-							System.out.println("Receiving file ...");
-							fileHandler.receiveFile(socket);
-						}
-//					}
+					String receivedMessage = in.readUTF();
+					if(receivedMessage.equalsIgnoreCase("Sending")) {
+						// I will receive my peer my file
+						System.out.println("Receiving file ...");
+						fileHandler.receiveFile(socket);
+					}
 				}
 				
 				// updates node with current files
@@ -184,6 +178,8 @@ public class Node extends Thread {
 				nodeInfo.sendDHT();
 				// gets the updated dht table
 				Hashtable<String, File[]> updatedDht = nodeInfo.getDHT();
+				
+				boolean change = false;
 				
 				List<String> updatedMissingFileNames = new ArrayList();
 				// compares my files to the peer/node
@@ -203,10 +199,11 @@ public class Node extends Thread {
 					out3.writeUTF("Done");
 					out3.flush();
 					System.out.println("DONE");
-					
+					change = true;
+				}
+				if(change) {
 					sendMissing(socket, nodeInfo);
 				}
-				
 			}
 		}
 	}
@@ -217,37 +214,30 @@ public class Node extends Thread {
 			String fileName = "";
 			DataInputStream in= new
 					DataInputStream(socket.getInputStream()); 
-//			while(in.available() <= 0) {
-//				// do nothing
-//			}
-//			// available() - approx. number of bytes that can be read 
-//			if(in.available()>0) {
-				fileName = in.readUTF();
-				System.out.println(fileName);
-				if(fileName.equalsIgnoreCase("Done")) {
-					System.out.println("DONE");
-					nodeInfo.receiveDHT();
-					// checks my missing files now
-					missingFiles(socket, nodeInfo);
-				}else if(fileName.equalsIgnoreCase("Exit")) {
-					// closes my socket
-					socket.close();
-				}else {
-					System.out.println("Sending file ...");
-					// Sending message to peer/node
-					DataOutputStream out =new DataOutputStream(socket.getOutputStream());
-					out.writeUTF("Sending");
-					out.flush();
-					// creating file and sending the file
-					String path = fileHandler.getPath();
-					File tempFile = new File(path + File.separator + fileName);
-					List<File> files = new ArrayList<File>(Arrays.asList(fileHandler.getListofFiles()));
-					File file = files.get(files.indexOf(tempFile));
-					fileHandler.sendFile(socket, file);
-				}
+			fileName = in.readUTF();
+			System.out.println(fileName);
+			if(fileName.equalsIgnoreCase("Done")) {
+				System.out.println("DONE");
+				nodeInfo.receiveDHT();
+				// checks my missing files now
+				missingFiles(socket, nodeInfo);
+			}else if(fileName.equalsIgnoreCase("Exit")) {
+				// closes my socket
+				socket.close();
+			}else {
+				System.out.println("Sending file ...");
+				// Sending message to peer/node
+				DataOutputStream out =new DataOutputStream(socket.getOutputStream());
+				out.writeUTF("Sending");
+				out.flush();
+				// creating file and sending the file
+				String path = fileHandler.getPath();
+				File tempFile = new File(path + File.separator + fileName);
+				List<File> files = new ArrayList<File>(Arrays.asList(fileHandler.getListofFiles()));
+				File file = files.get(files.indexOf(tempFile));
+				fileHandler.sendFile(socket, file);
 			}
-//		}
-		
+		}		
 	}
 	
 	
