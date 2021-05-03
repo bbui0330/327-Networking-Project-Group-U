@@ -188,14 +188,14 @@ public class Node extends Thread {
 					}
 				}
 				if(updatedMissingFileNames.isEmpty()) {
-					DataOutputStream out =new DataOutputStream(socket.getOutputStream());
-					out.writeUTF("Exit");
-					out.flush();
+					DataOutputStream out2 =new DataOutputStream(socket.getOutputStream());
+					out2.writeUTF("Exit");
+					out2.flush();
 				}else {
 					// sends the "Done" message to peer/node
-					DataOutputStream out =new DataOutputStream(socket.getOutputStream());
-					out.writeUTF("Done");
-					out.flush();
+					DataOutputStream out3 =new DataOutputStream(socket.getOutputStream());
+					out3.writeUTF("Done");
+					out3.flush();
 					System.out.println("DONE");
 					sendMissing(socket, nodeInfo);
 				}
