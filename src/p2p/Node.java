@@ -238,6 +238,7 @@ public class Node extends Thread {
 				if(peerFiles.size() > files.size()) {
 					request = true;
 				}else if(peerFiles.size() == files.size()){
+					System.out.println("Waiting ...");
 					requestOrSend(nodeInfo);
 				}
 				request = false;
