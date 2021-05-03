@@ -240,8 +240,9 @@ public class Node extends Thread {
 				}else if(peerFiles.size() == files.size()){
 					System.out.println("Waiting ...");
 					requestOrSend(nodeInfo);
+				}else {
+					request = false;
 				}
-				request = false;
 			}
 //				for(File f: files) {	// checks my files
 //					if(!peerFileNames.contains(f.getName())) {
