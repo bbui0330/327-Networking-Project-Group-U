@@ -202,6 +202,7 @@ public class Node extends Thread {
 					DataOutputStream out =new DataOutputStream(socket.getOutputStream());
 					out.writeUTF("Done");
 					out.flush();
+					sendMissing(socket, nodeInfo);
 				}
 				
 			}
