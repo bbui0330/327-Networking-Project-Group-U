@@ -39,11 +39,8 @@ public class NodeInfo {
 	public void updateNode(String ip) {
 		FileHandler fileHandler = new FileHandler();
 		File[] files = fileHandler.getListofFiles();
-		// checks if the list of files in the dht are the same as the directory
-//		if(dht.get(ip) != files) {
-			// updates dht if the list is incorrect
-			dht.put(ip, files);
-//		}
+		// updates the dht
+		dht.put(ip, files);
 	}
 	
 	/**
@@ -59,8 +56,12 @@ public class NodeInfo {
 	 * @throws IOException
 	 */
 	public void sendDHT() throws IOException {
+		// creates a ObjectOutputStream to write object for the socket output stream
 		ObjectOutputStream oos = new ObjectOutputStream(socket.getOutputStream());
+		// write the dht to ObjectOutputStream
         oos.writeObject(dht);
+        // Flushes the stream
+        // Forces any buffered output bytes to be written out to the stream  
         oos.flush();
 	}
 
@@ -70,12 +71,12 @@ public class NodeInfo {
 	 * @throws ClassNotFoundException
 	 */
 	public void receiveDHT() throws IOException, ClassNotFoundException {
+		// creates a ObjectInputStream to read object for the socket input stream
 		ObjectInputStream ois = new ObjectInputStream(socket.getInputStream());
 		Hashtable<String, File[]> temp = (Hashtable<String, File[]>) ois.readObject();
+		// iterates through the keys of the received dht
 		for(String s: temp.keySet()) {
-//			if(!dht.containsKey(s)) {
-				dht.put(s, temp.get(s));
-//			}
+			dht.put(s, temp.get(s));	// updated the values of the key
 		}
 	}
 }
