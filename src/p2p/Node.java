@@ -173,6 +173,10 @@ public class Node extends Thread {
 						}
 					}
 				}else {
+					// updates node with current files
+					nodeInfo.addNode(this.ip);
+					// sends updated dht
+					nodeInfo.sendDHT();
 					// sends the "Done" message to peer/node
 					DataOutputStream out3 =new DataOutputStream(socket.getOutputStream());
 					out3.writeUTF("Done");
@@ -180,6 +184,7 @@ public class Node extends Thread {
 					System.out.println("DONE");
 					sendMissing(socket, nodeInfo);
 				}
+				missingFiles(socket, nodeInfo);
 				
 				// updates node with current files
 				nodeInfo.addNode(this.ip);
