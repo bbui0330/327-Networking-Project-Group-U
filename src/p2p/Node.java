@@ -235,11 +235,13 @@ public class Node extends Thread {
 				for (int i = 0; i < peerFiles.size(); i++) {
 					peerFileNames.add(peerFiles.get(i).getName());
 				}
-				if(peerFiles.size() >= files.size()) {
+				if(peerFiles.size() > files.size()) {
 					request = true;
-				}else {
-					request = false;
+				}else if(peerFiles.size() == files.size()){
+					requestOrSend(nodeInfo);
 				}
+				request = false;
+			}
 //				for(File f: files) {	// checks my files
 //					if(!peerFileNames.contains(f.getName())) {
 //						// I need to send my peer my file
@@ -253,7 +255,7 @@ public class Node extends Thread {
 //					}
 //				}
 				
-			}
+//			}
 		}
 		return request;
 	}
