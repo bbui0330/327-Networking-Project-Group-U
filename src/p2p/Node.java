@@ -234,10 +234,22 @@ public class Node extends Thread {
 					for(File f: files) {	// checks my files
 						if(!peerFileNames.contains(f.getName())) {
 							// I need to send my peer my file
-							request = false;
+							request = true;
+						}
+					}
+					for(File f: peerFiles) {	// checks files in peer files
+						if(!fileNames.contains(f.getName())) {
+							// I will receive the file from my peer
+							request = true;
 						}
 					}
 				}else {
+					for(File f: files) {	// checks my files
+						if(!peerFileNames.contains(f.getName())) {
+							// I need to send my peer my file
+							request = true;
+						}
+					}
 					for(File f: peerFiles) {	// checks files in peer files
 						if(!fileNames.contains(f.getName())) {
 							// I will receive the file from my peer
