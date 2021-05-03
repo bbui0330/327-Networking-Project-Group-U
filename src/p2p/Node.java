@@ -162,6 +162,9 @@ public class Node extends Thread {
 					out.writeUTF(s); 
 					DataInputStream in= new
 							DataInputStream(socket.getInputStream()); 
+					while(in.available() <= 0) {
+						// do nothing
+					}
 					// available() - approx. number of bytes that can be read 
 					if(in.available()>0) {
 						String receivedMessage = in.readUTF();
