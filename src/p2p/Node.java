@@ -188,14 +188,14 @@ public class Node extends Thread {
 					}
 				}
 				if(updatedMissingFileNames.isEmpty()) {
-					DataOutputStream out2 =new DataOutputStream(socket.getOutputStream());
-					out2.writeUTF("Exit");
-					out2.flush();
+					DataOutputStream out =new DataOutputStream(socket.getOutputStream());
+					out.writeUTF("Exit");
+					out.flush();
 				}else {
 					// sends the "Done" message to peer/node
-					DataOutputStream out3 =new DataOutputStream(socket.getOutputStream());
-					out3.writeUTF("Done");
-					out3.flush();
+					DataOutputStream out =new DataOutputStream(socket.getOutputStream());
+					out.writeUTF("Done");
+					out.flush();
 					System.out.println("DONE");
 					sendMissing(socket, nodeInfo);
 				}
@@ -206,10 +206,9 @@ public class Node extends Thread {
 	
 	private void sendMissing(Socket socket, NodeInfo nodeInfo) throws IOException, ClassNotFoundException, InterruptedException {
 		while(true) {
-			String fileName = "";
 			DataInputStream in= new
 					DataInputStream(socket.getInputStream()); 
-			fileName = in.readUTF();
+			String fileName = in.readUTF();
 			System.out.println(fileName);
 			if(fileName.equalsIgnoreCase("Done")) {
 				System.out.println("DONE");
