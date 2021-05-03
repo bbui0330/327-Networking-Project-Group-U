@@ -206,29 +206,33 @@ public class Node extends Thread {
 		String fileName = "";
 		DataInputStream in= new
 				DataInputStream(socket.getInputStream()); 
+		while(in.available() <= 0) {
+			// do nothing
+		}
 		// available() - approx. number of bytes that can be read 
 		if(in.available()>0) {
 			fileName = in.readUTF();
 			System.out.println(fileName);
+			if(fileName.equalsIgnoreCase("Done")) {
+				// checks my missing files now
+				missingFiles(socket, nodeInfo);
+			}else if(fileName.equalsIgnoreCase("Exit")) {
+				// closes my socket
+				socket.close();
+			}else {
+				// Sending message to peer/node
+				DataOutputStream out =new DataOutputStream(socket.getOutputStream());
+				out.writeUTF("Sending");
+				out.flush();
+				// creating file and sending the file
+				String path = fileHandler.getPath();
+				File tempFile = new File(path + File.separator + fileName);
+				List<File> files = new ArrayList<File>(Arrays.asList(fileHandler.getListofFiles()));
+				File file = files.get(files.indexOf(tempFile));
+				fileHandler.sendFile(socket, file);
+			}
 		}
-		if(fileName.equalsIgnoreCase("Done")) {
-			// checks my missing files now
-			missingFiles(socket, nodeInfo);
-		}else if(fileName.equalsIgnoreCase("Exit")) {
-			// closes my socket
-			socket.close();
-		}else {
-			// Sending message to peer/node
-			DataOutputStream out =new DataOutputStream(socket.getOutputStream());
-			out.writeUTF("Sending");
-			out.flush();
-			// creating file and sending the file
-			String path = fileHandler.getPath();
-			File tempFile = new File(path + File.separator + fileName);
-			List<File> files = new ArrayList<File>(Arrays.asList(fileHandler.getListofFiles()));
-			File file = files.get(files.indexOf(tempFile));
-			fileHandler.sendFile(socket, file);
-		}
+		
 	}
 	
 	
