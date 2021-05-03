@@ -230,12 +230,22 @@ public class Node extends Thread {
 				for (int i = 0; i < peerFiles.size(); i++) {
 					peerFileNames.add(peerFiles.get(i).getName());
 				}
-				for(File f: files) {	// checks my files
-					if(!peerFileNames.contains(f.getName())) {
-						// I need to send my peer my file
-						request = true;
+				if(peerFiles.size() >= files.size()) {
+					for(File f: files) {	// checks my files
+						if(!peerFileNames.contains(f.getName())) {
+							// I need to send my peer my file
+							request = false;
+						}
+					}
+				}else {
+					for(File f: peerFiles) {	// checks files in peer files
+						if(!fileNames.contains(f.getName())) {
+							// I will receive the file from my peer
+							request = true;
+						}
 					}
 				}
+				
 			}
 		}
 		return request;
