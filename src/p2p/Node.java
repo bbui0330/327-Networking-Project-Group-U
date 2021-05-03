@@ -179,8 +179,6 @@ public class Node extends Thread {
 				// gets the updated dht table
 				Hashtable<String, File[]> updatedDht = nodeInfo.getDHT();
 				
-				boolean change = false;
-				
 				List<String> updatedMissingFileNames = new ArrayList();
 				// compares my files to the peer/node
 				for(File peerFile : dht.get(keys[j])) {
@@ -199,28 +197,7 @@ public class Node extends Thread {
 					out3.writeUTF("Done");
 					out3.flush();
 					System.out.println("DONE");
-					change = true;
-				}
-				if(change) {
-					Thread t = new Thread(new Runnable() {
-					    @Override
-					    public void run() {
-					    	try {
-								sendMissing(socket, nodeInfo);
-							} catch (ClassNotFoundException e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
-							} catch (IOException e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
-							} catch (InterruptedException e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
-							}
-					    } 
-					});
-					Thread.sleep(5000);
-					t.start();
+					sendMissing(socket, nodeInfo);
 				}
 			}
 		}
