@@ -48,7 +48,7 @@ public class Node extends Thread {
 	 */
 	private void link() throws IOException, ClassNotFoundException, InterruptedException {
 		switch (type) {
-		case "Server": 
+		case "Peer_1": 
 			// sets IP address to the IP address of this device
 			this.ip = InetAddress.getLocalHost().getHostAddress().toString();
 
@@ -56,65 +56,65 @@ public class Node extends Thread {
 			ServerSocket serverSock = new ServerSocket(port);
 
 			// Listens for a connection to be made to this socket and acceptsit
-			Socket server = serverSock.accept();
+			Socket peer1 = serverSock.accept();
 			
-			server.setKeepAlive(true);
+			peer1.setKeepAlive(true);
 			System.out.println("Connected");
 
-			// create a NodeInfo object for the server
-			NodeInfo serverNodeInfo = new NodeInfo(server);
+			// create a NodeInfo object
+			NodeInfo peerNodeInfo1 = new NodeInfo(peer1);
 			// adds my IP to the dht
-			serverNodeInfo.addNode(this.ip);
+			peerNodeInfo1.addNode(this.ip);
 			// receives dht from peer
-			serverNodeInfo.receiveDHT();
+			peerNodeInfo1.receiveDHT();
 			// sends updated dht to peer
-			serverNodeInfo.sendDHT();
+			peerNodeInfo1.sendDHT();
 			// prints dht
-			printDht(serverNodeInfo);
+			printDht(peerNodeInfo1);
 
 			// determines whether I should receive or send files
-			if(!requestOrSend(serverNodeInfo)) {
+			if(!requestOrSend(peerNodeInfo1)) {
 				// send peer missing files
-				sendMissing(server, serverNodeInfo);
+				sendMissing(peer1, peerNodeInfo1);
 			}else {
 				// receive missing files
-				missingFiles(server, serverNodeInfo);
+				missingFiles(peer1, peerNodeInfo1);
 			}
-			server.close();		// closes the socket
+			peer1.close();		// closes the socket
 			break;
 
-		case "Client":
+		case "Peer_2":
 			System.out.println("Waiting for connection ...");
-			Socket peer = null;	// creates client socket
+			Socket peer2 = null;	// creates client socket
 			// checks every IP in the network for the peer that is acting as a server
 			for (String ip : networkIps) {
 				try {
 					/* creates a stream socket and connects it to the 
 					 * specified port number at the specified IP address */
-					peer = new Socket(ip, port);
+					peer2 = new Socket(ip, port);
 					System.out.println("Connected");
 
-					// create a NodeInfo object for the peer
-					NodeInfo peerNodeInfo = new NodeInfo(peer);
+					// create a NodeInfo object
+					NodeInfo peerNodeInfo2 = new NodeInfo(peer2);
 					// adds my IP to the dht
-					peerNodeInfo.addNode(InetAddress.getLocalHost().getHostAddress().toString());
+					peerNodeInfo2.addNode(InetAddress.getLocalHost().getHostAddress().toString());
 					// sends dht to peer
-					peerNodeInfo.sendDHT();
+					peerNodeInfo2.sendDHT();
 					Thread.sleep(1000);
 					// receives dht from peer
-					peerNodeInfo.receiveDHT();
+					peerNodeInfo2.receiveDHT();
 					// prints dht
-					printDht(peerNodeInfo);
+					printDht(peerNodeInfo2);
 
 					// determines whether I should receive or send files
-					if(!requestOrSend(peerNodeInfo)) {
+					if(!requestOrSend(peerNodeInfo2)) {
 						// send peer missing files
-						sendMissing(peer, peerNodeInfo);
+						sendMissing(peer2, peerNodeInfo2);
 					}else {
 						// receive missing files
-						missingFiles(peer, peerNodeInfo);
+						missingFiles(peer2, peerNodeInfo2);
 					}
-					peer.close();		// closes the socket
+					peer2.close();		// closes the socket
 				} catch (ConnectException e) {
 					// do nothing
 				}
