@@ -202,7 +202,25 @@ public class Node extends Thread {
 					change = true;
 				}
 				if(change) {
-					sendMissing(socket, nodeInfo);
+					Thread t = new Thread(new Runnable() {
+					    @Override
+					    public void run() {
+					    	try {
+								sendMissing(socket, nodeInfo);
+							} catch (ClassNotFoundException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							} catch (IOException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							} catch (InterruptedException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+					    } 
+					});
+					Thread.sleep(5000);
+					t.start();
 				}
 			}
 		}
