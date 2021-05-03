@@ -172,6 +172,13 @@ public class Node extends Thread {
 							fileHandler.receiveFile(socket);
 						}
 					}
+				}else {
+					// sends the "Done" message to peer/node
+					DataOutputStream out3 =new DataOutputStream(socket.getOutputStream());
+					out3.writeUTF("Done");
+					out3.flush();
+					System.out.println("DONE");
+					sendMissing(socket, nodeInfo);
 				}
 				
 				// updates node with current files
@@ -181,26 +188,26 @@ public class Node extends Thread {
 				// gets the updated dht table
 				Hashtable<String, File[]> updatedDht = nodeInfo.getDHT();
 				
-				List<String> updatedMissingFileNames = new ArrayList();
-				// compares my files to the peer/node
-				for(File peerFile : dht.get(keys[j])) {
-					// add the missing file to missingFileNames
-					if(!fileNames.contains(peerFile.getName())) {
-						updatedMissingFileNames.add(peerFile.getName());
-					}
-				}
-				if(updatedMissingFileNames.isEmpty()) {
-					DataOutputStream out2 =new DataOutputStream(socket.getOutputStream());
-					out2.writeUTF("Exit");
-					out2.flush();
-				}else {
-					// sends the "Done" message to peer/node
-					DataOutputStream out3 =new DataOutputStream(socket.getOutputStream());
-					out3.writeUTF("Done");
-					out3.flush();
-					System.out.println("DONE");
-					sendMissing(socket, nodeInfo);
-				}
+//				List<String> updatedMissingFileNames = new ArrayList();
+//				// compares my files to the peer/node
+//				for(File peerFile : dht.get(keys[j])) {
+//					// add the missing file to missingFileNames
+//					if(!fileNames.contains(peerFile.getName())) {
+//						updatedMissingFileNames.add(peerFile.getName());
+//					}
+//				}
+//				if(updatedMissingFileNames.isEmpty()) {
+//					DataOutputStream out2 =new DataOutputStream(socket.getOutputStream());
+//					out2.writeUTF("Exit");
+//					out2.flush();
+//				}else {
+//					// sends the "Done" message to peer/node
+//					DataOutputStream out3 =new DataOutputStream(socket.getOutputStream());
+//					out3.writeUTF("Done");
+//					out3.flush();
+//					System.out.println("DONE");
+//					sendMissing(socket, nodeInfo);
+//				}
 			}
 		}
 	}
