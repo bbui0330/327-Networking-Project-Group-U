@@ -52,7 +52,7 @@ public class Node extends Thread {
 			// sets IP address to the IP address of this device
 			this.ip = InetAddress.getLocalHost().getHostAddress().toString();
 
-			while(true) {
+//			while(true) {
 				// creates a server socket, bound to the specified port
 				ServerSocket serverSock = new ServerSocket(newPort);
 
@@ -68,17 +68,18 @@ public class Node extends Thread {
 				printDht(serverNodeInfo);
 				
 				missingFiles(server, serverNodeInfo);
+				server.close();		// closes the socket
 
 //				compareFiles(serverNodeInfo, server);
 				
-				newPort += 1;
-				Thread.sleep(1000);
-
-//				server.close();		// closes the socket
-			}
+//				newPort += 1;
+//				Thread.sleep(1000);
+//
+////				server.close();		// closes the socket
+//			}
 		case "Client":
 			
-			while(true) {
+//			while(true) {
 				System.out.println("Waiting for connection ...");
 				Socket peer = null;	// creates client socket
 				// checks every IP in the network for the peer that is acting as a server
@@ -105,7 +106,7 @@ public class Node extends Thread {
 					}
 				}
 			}
-		}
+//		}
 	}
 	
 	/**
