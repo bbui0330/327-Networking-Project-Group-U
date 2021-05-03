@@ -71,7 +71,7 @@ public class Node extends Thread {
 				
 				bools[0] = requestOrSend(serverNodeInfo);
 				System.out.println(requestOrSend(serverNodeInfo));
-				if(requestOrSend(serverNodeInfo)) {
+				if(!requestOrSend(serverNodeInfo)) {
 					sendMissing(server, serverNodeInfo);
 				}else {
 					missingFiles(server, serverNodeInfo);
@@ -107,7 +107,7 @@ public class Node extends Thread {
 						printDht(peerNodeInfo);
 						bools[1] = requestOrSend(peerNodeInfo);
 						System.out.println(requestOrSend(peerNodeInfo));
-						if(requestOrSend(peerNodeInfo)) {
+						if(!requestOrSend(peerNodeInfo)) {
 							sendMissing(peer, peerNodeInfo);
 						}else {
 							missingFiles(peer, peerNodeInfo);
