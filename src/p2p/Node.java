@@ -71,7 +71,7 @@ public class Node extends Thread {
 				
 				bools[0] = requestOrSend(serverNodeInfo);
 				System.out.println(requestOrSend(serverNodeInfo));
-				if(requestOrSend(serverNodeInfo)) {
+				if(!requestOrSend(serverNodeInfo)) {
 					sendMissing(server, serverNodeInfo);
 				}else {
 					missingFiles(server, serverNodeInfo);
@@ -107,7 +107,7 @@ public class Node extends Thread {
 						printDht(peerNodeInfo);
 						bools[1] = requestOrSend(peerNodeInfo);
 						System.out.println(requestOrSend(peerNodeInfo));
-						if(requestOrSend(peerNodeInfo)) {
+						if(!requestOrSend(peerNodeInfo)) {
 							sendMissing(peer, peerNodeInfo);
 						}else {
 							missingFiles(peer, peerNodeInfo);
@@ -228,7 +228,7 @@ public class Node extends Thread {
 			fileNames.add(files.get(i).getName());
 		}
 		for(int j = 0; j < keys.length; j++) {
-			// compares my files to the other nodes/peers in the network
+			// compares my files to the other nodesreceive file over socket is only reading first file/peers in the network
 			if(!keys[j].equals(InetAddress.getLocalHost().getHostAddress().toString())) {
 				List<File> peerFiles = new ArrayList<File>(Arrays.asList(dht.get(keys[j])));
 				List<String> peerFileNames = new ArrayList<>();
@@ -238,8 +238,9 @@ public class Node extends Thread {
 				if(peerFiles.size() > files.size()) {
 					request = true;
 				}else if(peerFiles.size() == files.size()){
-					System.out.println("Waiting ...");
-					requestOrSend(nodeInfo);
+//					System.out.println("Waiting ...");
+//					requestOrSend(nodeInfo);
+					run();
 				}else {
 					request = false;
 				}
