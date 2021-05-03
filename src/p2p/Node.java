@@ -135,7 +135,6 @@ public class Node extends Thread {
 	
 	
 	private void missingFiles(Socket socket, NodeInfo nodeInfo) throws ClassNotFoundException, IOException, InterruptedException {
-		System.out.println("inside missing files");
 		Hashtable<String, File[]> dht = nodeInfo.getDHT();	// gets the dht table
 		// stores the list of keys (IP addresses)
 		String[] keys = dht.keySet().toArray(new String[dht.keySet().size()]);
@@ -146,7 +145,7 @@ public class Node extends Thread {
 		}
 		for(int j = 0; j < keys.length; j++) {
 			// compares my files to the other nodes/peers in the network
-			if(!keys[j].equals(this.ip)) {
+			if(!keys[j].equals(InetAddress.getLocalHost().getHostAddress().toString())) {
 				List<String> missingFileNames = new ArrayList();
 				// compares my files to the peer/node
 				for(File peerFile : dht.get(keys[j])) {
@@ -174,13 +173,6 @@ public class Node extends Thread {
 					}
 				}
 				
-				// updates node with current files
-				nodeInfo.addNode(this.ip);
-				// sends updated dht
-				nodeInfo.sendDHT();
-				// gets the updated dht table
-				Hashtable<String, File[]> updatedDht = nodeInfo.getDHT();
-				
 				List<String> updatedMissingFileNames = new ArrayList();
 				// compares my files to the peer/node
 				for(File peerFile : dht.get(keys[j])) {
@@ -193,12 +185,21 @@ public class Node extends Thread {
 					DataOutputStream out2 =new DataOutputStream(socket.getOutputStream());
 					out2.writeUTF("Exit");
 					out2.flush();
+					// run main again;
+					run();
 				}else {
 					// sends the "Done" message to peer/node
 					DataOutputStream out3 =new DataOutputStream(socket.getOutputStream());
 					out3.writeUTF("Done");
 					out3.flush();
 					System.out.println("DONE");
+					
+					// updates node with current files
+					nodeInfo.addNode(InetAddress.getLocalHost().getHostAddress().toString());
+					// sends updated dht
+					nodeInfo.sendDHT();
+					// gets the updated dht table
+					Hashtable<String, File[]> updatedDht = nodeInfo.getDHT();
 					sendMissing(socket, nodeInfo);
 				}
 			}
