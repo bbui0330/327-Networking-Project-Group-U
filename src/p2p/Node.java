@@ -148,18 +148,18 @@ public class Node extends Thread {
 					peerFileNames.add(peerFiles.get(i).getName());
 				}
 				// I have more files that my peer
-				if(files.size() > peerFiles.size()) {
+//				if(files.size() > peerFiles.size()) {
 					System.out.println("I am in the IF");
 					for(File f: files) {
 						if(peerFileNames.contains(f.getName())) {
 							// my peer has the same file name in their list of files
-
+							
 						}else {
 							// I will send my peer my file
 							fileHandler.sendFile(socket, f);
 						}
 					}
-				}else{	// My peer has more files than me
+//				}else{	// My peer has more files than me
 					System.out.println("I am in the ELSE");
 					for(File f: peerFiles) {
 						if(fileNames.contains(f.getName())) {
@@ -170,7 +170,7 @@ public class Node extends Thread {
 							fileHandler.receiveFile(socket);
 						}
 					}
-				}
+//				}
 			}
 		}
 	}
