@@ -156,19 +156,21 @@ public class Node extends Thread {
 					}
 				}
 				
-				// iterates through the file name that I am missing
-				for(String s : missingFileNames) {
-					System.out.println("Requesting file ...");
-					DataOutputStream out =new DataOutputStream(socket.getOutputStream());
-					// sends message to peer/node
-					out.writeUTF(s); 
-					DataInputStream in= new
-							DataInputStream(socket.getInputStream()); 
-					String receivedMessage = in.readUTF();
-					if(receivedMessage.equalsIgnoreCase("Sending")) {
-						// I will receive my peer my file
-						System.out.println("Receiving file ...");
-						fileHandler.receiveFile(socket);
+				if(!missingFileNames.isEmpty()) {
+					// iterates through the file name that I am missing
+					for(String s : missingFileNames) {
+						System.out.println("Requesting file ...");
+						DataOutputStream out =new DataOutputStream(socket.getOutputStream());
+						// sends message to peer/node
+						out.writeUTF(s); 
+						DataInputStream in= new
+								DataInputStream(socket.getInputStream()); 
+						String receivedMessage = in.readUTF();
+						if(receivedMessage.equalsIgnoreCase("Sending")) {
+							// I will receive my peer my file
+							System.out.println("Receiving file ...");
+							fileHandler.receiveFile(socket);
+						}
 					}
 				}
 				
