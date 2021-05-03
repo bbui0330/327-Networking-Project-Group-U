@@ -133,7 +133,7 @@ public class Node extends Thread {
 	
 	
 	private void missingFiles(Socket socket, NodeInfo nodeInfo) throws ClassNotFoundException, IOException {
-		nodeInfo.receiveDHT();
+		System.out.println("inside missing files");
 		Hashtable<String, File[]> dht = nodeInfo.getDHT();	// gets the dht table
 		// stores the list of keys (IP addresses)
 		String[] keys = dht.keySet().toArray(new String[dht.keySet().size()]);
@@ -216,6 +216,7 @@ public class Node extends Thread {
 			fileName = in.readUTF();
 			System.out.println(fileName);
 			if(fileName.equalsIgnoreCase("Done")) {
+				nodeInfo.receiveDHT();
 				// checks my missing files now
 				missingFiles(socket, nodeInfo);
 			}else if(fileName.equalsIgnoreCase("Exit")) {
