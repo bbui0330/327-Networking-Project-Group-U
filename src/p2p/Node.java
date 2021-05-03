@@ -47,6 +47,7 @@ public class Node extends Thread {
 	 * @throws InterruptedException 
 	 */
 	private void link() throws IOException, ClassNotFoundException, InterruptedException {
+		boolean[] bools = new boolean[2];
 		int newPort = port;
 		switch (type) {
 		case "Server": 
@@ -68,6 +69,8 @@ public class Node extends Thread {
 
 				printDht(serverNodeInfo);
 				
+				bools[0] = requestOrSend(serverNodeInfo);
+				System.out.println(requestOrSend(serverNodeInfo));
 				if(requestOrSend(serverNodeInfo)) {
 					sendMissing(server, serverNodeInfo);
 				}else {
@@ -102,6 +105,8 @@ public class Node extends Thread {
 						Thread.sleep(1000);
 						peerNodeInfo.receiveDHT();
 						printDht(peerNodeInfo);
+						bools[1] = requestOrSend(peerNodeInfo);
+						System.out.println(requestOrSend(peerNodeInfo));
 						if(requestOrSend(peerNodeInfo)) {
 							sendMissing(peer, peerNodeInfo);
 						}else {
