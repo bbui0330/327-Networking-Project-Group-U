@@ -1,6 +1,8 @@
 package p2p;
 
 import java.io.BufferedOutputStream;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -64,8 +66,10 @@ public class Node extends Thread {
 				serverNodeInfo.sendDHT();
 
 				printDht(serverNodeInfo);
+				
+				missingFiles(server, serverNodeInfo);
 
-				compareFiles(serverNodeInfo, server);
+//				compareFiles(serverNodeInfo, server);
 				
 				newPort += 1;
 				Thread.sleep(1000);
@@ -92,7 +96,8 @@ public class Node extends Thread {
 						peerNodeInfo.receiveDHT();
 						printDht(peerNodeInfo);
 					
-						compareFiles(peerNodeInfo, peer);
+						sendMissing(peer, peerNodeInfo);
+//						compareFiles(peerNodeInfo, peer);
 						peer.close();		// closes the socket
 				
 					} catch (ConnectException e) {
@@ -127,6 +132,106 @@ public class Node extends Thread {
 	}
 	
 	
+	private void missingFiles(Socket socket, NodeInfo nodeInfo) throws ClassNotFoundException, IOException {
+		nodeInfo.receiveDHT();
+		Hashtable<String, File[]> dht = nodeInfo.getDHT();	// gets the dht table
+		// stores the list of keys (IP addresses)
+		String[] keys = dht.keySet().toArray(new String[dht.keySet().size()]);
+		List<File> files = new ArrayList<File>(Arrays.asList(fileHandler.getListofFiles()));
+		List<String> fileNames = new ArrayList<>();
+		for (int i = 0; i < files.size(); i++) {
+			fileNames.add(files.get(i).getName());
+		}
+		for(int j = 0; j < keys.length; j++) {
+			// compares my files to the other nodes/peers in the network
+			if(!keys[j].equals(this.ip)) {
+				List<String> missingFileNames = new ArrayList();
+				// compares my files to the peer/node
+				for(File peerFile : dht.get(keys[j])) {
+					// add the missing file to missingFileNames
+					if(!fileNames.contains(peerFile.getName())) {
+						missingFileNames.add(peerFile.getName());
+					}
+				}
+				
+				// iterates through the file name that I am missing
+				for(String s : missingFileNames) {
+					DataOutputStream out =new DataOutputStream(socket.getOutputStream());
+					// sends message to peer/node
+					out.writeUTF(s); 
+					DataInputStream in= new
+							DataInputStream(socket.getInputStream()); 
+					// available() - approx. number of bytes that can be read 
+					if(in.available()>0) {
+						String receivedMessage = in.readUTF();
+						if(receivedMessage.equalsIgnoreCase("Sending")) {
+							// I will receive my peer my file
+							fileHandler.receiveFile(socket);
+						}
+					}
+				}
+				
+				// updates node with current files
+				nodeInfo.addNode(this.ip);
+				// sends updated dht
+				nodeInfo.sendDHT();
+				// gets the updated dht table
+				Hashtable<String, File[]> updatedDht = nodeInfo.getDHT();
+				
+				List<String> updatedMissingFileNames = new ArrayList();
+				// compares my files to the peer/node
+				for(File peerFile : dht.get(keys[j])) {
+					// add the missing file to missingFileNames
+					if(!fileNames.contains(peerFile.getName())) {
+						updatedMissingFileNames.add(peerFile.getName());
+					}
+				}
+				if(updatedMissingFileNames.isEmpty()) {
+					DataOutputStream out =new DataOutputStream(socket.getOutputStream());
+					out.writeUTF("Exit");
+					out.flush();
+				}else {
+					// sends the "Done" message to peer/node
+					DataOutputStream out =new DataOutputStream(socket.getOutputStream());
+					out.writeUTF("Done");
+					out.flush();
+				}
+				
+			}
+		}
+	}
+	
+	
+	private void sendMissing(Socket socket, NodeInfo nodeInfo) throws IOException, ClassNotFoundException {
+		String fileName = "";
+		DataInputStream in= new
+				DataInputStream(socket.getInputStream()); 
+		// available() - approx. number of bytes that can be read 
+		if(in.available()>0) {
+			fileName = in.readUTF();
+			System.out.println(fileName);
+		}
+		if(fileName.equalsIgnoreCase("Done")) {
+			// checks my missing files now
+			missingFiles(socket, nodeInfo);
+		}else if(fileName.equalsIgnoreCase("Exit")) {
+			// closes my socket
+			socket.close();
+		}else {
+			// Sending message to peer/node
+			DataOutputStream out =new DataOutputStream(socket.getOutputStream());
+			out.writeUTF("Sending");
+			out.flush();
+			// creating file and sending the file
+			String path = fileHandler.getPath();
+			File tempFile = new File(path + File.separator + fileName);
+			List<File> files = new ArrayList<File>(Arrays.asList(fileHandler.getListofFiles()));
+			File file = files.get(files.indexOf(tempFile));
+			fileHandler.sendFile(socket, file);
+		}
+	}
+	
+	
 	private void compareFiles(NodeInfo nodeInfo, Socket socket) throws IOException, InterruptedException, ClassNotFoundException {
 		Hashtable<String, File[]> dht = nodeInfo.getDHT();	// gets the dht table
 		// stores the list of keys (IP addresses)
@@ -156,6 +261,7 @@ public class Node extends Thread {
 						fileHandler.sendFile(socket, f);
 					}
 				}
+				
 				for(File f: peerFiles) {	// checks files in peer files
 					if(fileNames.contains(f.getName())) {
 						// I have the same file name in my list of files

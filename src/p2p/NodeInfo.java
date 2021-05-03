@@ -27,10 +27,6 @@ public class NodeInfo {
 	 * @param ip: IP address associated with the current node/peer
 	 */
 	public void addNode(String ip) {
-		if(dht.containsKey(ip)) {
-			updateNode(ip);
-			return;
-		}
 		FileHandler fileHandler = new FileHandler();
 		File[] files = fileHandler.getListofFiles();
 		dht.put(ip, files);
@@ -44,10 +40,10 @@ public class NodeInfo {
 		FileHandler fileHandler = new FileHandler();
 		File[] files = fileHandler.getListofFiles();
 		// checks if the list of files in the dht are the same as the directory
-		if(dht.get(ip) != files) {
+//		if(dht.get(ip) != files) {
 			// updates dht if the list is incorrect
 			dht.put(ip, files);
-		}
+//		}
 	}
 	
 	/**
@@ -77,9 +73,9 @@ public class NodeInfo {
 		ObjectInputStream ois = new ObjectInputStream(socket.getInputStream());
 		Hashtable<String, File[]> temp = (Hashtable<String, File[]>) ois.readObject();
 		for(String s: temp.keySet()) {
-			if(!dht.containsKey(s)) {
+//			if(!dht.containsKey(s)) {
 				dht.put(s, temp.get(s));
-			}
+//			}
 		}
 	}
 }
