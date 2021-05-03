@@ -281,18 +281,18 @@ public class Node extends Thread {
 		
 	@Override
 	public void run() {
-		super.run();
-		try{
-			while(true) {
+		while(true) {
+			super.run();
+			try{
 				link();	// starts the link() function
 			}
-		}
-		catch(IOException e) {} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			catch(IOException e) {} catch (ClassNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 	}
 
