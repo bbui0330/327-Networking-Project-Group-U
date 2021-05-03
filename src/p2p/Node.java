@@ -134,7 +134,7 @@ public class Node extends Thread {
 	}
 	
 	
-	private void missingFiles(Socket socket, NodeInfo nodeInfo) throws ClassNotFoundException, IOException {
+	private void missingFiles(Socket socket, NodeInfo nodeInfo) throws ClassNotFoundException, IOException, InterruptedException {
 		System.out.println("inside missing files");
 		Hashtable<String, File[]> dht = nodeInfo.getDHT();	// gets the dht table
 		// stores the list of keys (IP addresses)
@@ -202,6 +202,7 @@ public class Node extends Thread {
 					DataOutputStream out3 =new DataOutputStream(socket.getOutputStream());
 					out3.writeUTF("Done");
 					out3.flush();
+					Thread.sleep(5000);
 					System.out.println("DONE");
 					sendMissing(socket, nodeInfo);
 				}
@@ -211,7 +212,7 @@ public class Node extends Thread {
 	}
 	
 	
-	private void sendMissing(Socket socket, NodeInfo nodeInfo) throws IOException, ClassNotFoundException {
+	private void sendMissing(Socket socket, NodeInfo nodeInfo) throws IOException, ClassNotFoundException, InterruptedException {
 		while(true) {
 			String fileName = "";
 			DataInputStream in= new
