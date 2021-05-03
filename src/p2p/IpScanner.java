@@ -11,6 +11,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class IpScanner {
 	 
     /**
+     * Scans the network in order to get all the IP addresses on the network.
      * @param networkId: the network id, or the subnet (i.e. 192.168.0)
      * @param numOfIps: the number of IP addresses that will be tested (i.e. 255)
      * @return ConcurrentSkipListSet: the list of IP addresses
@@ -26,15 +27,17 @@ public class IpScanner {
         // timeout
         int timeout = 1000;
         
+        
         while (ips.get() <= numOfIps) {
         	// ips.getAndIncrement() automatically increments the current value by one
             String ip = networkId + ips.getAndIncrement();
-            // 
+            // an asynchronous execution mechanism which is capable of executing tasks 
+            // concurrently in the background
             executorService.submit(() -> {
                 try {
                 	// Determines the IP address of ip
                     InetAddress inAddress = InetAddress.getByName(ip);
-                    if (inAddress.isReachable(timeout)) {
+                    if (inAddress.isReachable(timeout)) { 
                     	// adds the IP address to the array if reachable
                         ipsSet.add(ip);	
                     }
