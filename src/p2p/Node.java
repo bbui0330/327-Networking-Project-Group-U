@@ -10,6 +10,7 @@ import java.net.ConnectException;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.UnknownHostException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -67,7 +68,11 @@ public class Node extends Thread {
 
 				printDht(serverNodeInfo);
 				
-				missingFiles(server, serverNodeInfo);
+				if(requestOrSend(serverNodeInfo)) {
+					sendMissing(server, serverNodeInfo);
+				}else {
+					missingFiles(server, serverNodeInfo);
+				}
 				server.close();		// closes the socket
 				break;
 
@@ -97,8 +102,11 @@ public class Node extends Thread {
 						Thread.sleep(1000);
 						peerNodeInfo.receiveDHT();
 						printDht(peerNodeInfo);
-					
-						sendMissing(peer, peerNodeInfo);
+						if(requestOrSend(peerNodeInfo)) {
+							sendMissing(peer, peerNodeInfo);
+						}else {
+							missingFiles(peer, peerNodeInfo);
+						}
 //						compareFiles(peerNodeInfo, peer);
 						peer.close();		// closes the socket
 				
@@ -204,6 +212,34 @@ public class Node extends Thread {
 		}
 	}
 	
+	private boolean requestOrSend(NodeInfo nodeInfo) throws UnknownHostException {
+		boolean request = false;
+		Hashtable<String, File[]> dht = nodeInfo.getDHT();	// gets the dht table
+		// stores the list of keys (IP addresses)
+		String[] keys = dht.keySet().toArray(new String[dht.keySet().size()]);
+		List<File> files = new ArrayList<File>(Arrays.asList(fileHandler.getListofFiles()));
+		List<String> fileNames = new ArrayList<>();
+		for (int i = 0; i < files.size(); i++) {
+			fileNames.add(files.get(i).getName());
+		}
+		for(int j = 0; j < keys.length; j++) {
+			// compares my files to the other nodes/peers in the network
+			if(!keys[j].equals(InetAddress.getLocalHost().getHostAddress().toString())) {
+				List<File> peerFiles = new ArrayList<File>(Arrays.asList(dht.get(keys[j])));
+				List<String> peerFileNames = new ArrayList<>();
+				for (int i = 0; i < peerFiles.size(); i++) {
+					peerFileNames.add(peerFiles.get(i).getName());
+				}
+				for(File f: files) {	// checks my files
+					if(!peerFileNames.contains(f.getName())) {
+						// I need to send my peer my file
+						request = true;
+					}
+				}
+			}
+		}
+		return request;
+	}
 	
 	private void sendMissing(Socket socket, NodeInfo nodeInfo) throws IOException, ClassNotFoundException, InterruptedException {
 		while(true) {
