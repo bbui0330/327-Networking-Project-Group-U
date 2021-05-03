@@ -167,6 +167,7 @@ public class Node extends Thread {
 						String receivedMessage = in.readUTF();
 						if(receivedMessage.equalsIgnoreCase("Sending")) {
 							// I will receive my peer my file
+							System.out.println("Receiving file ...");
 							fileHandler.receiveFile(socket);
 						}
 					}
