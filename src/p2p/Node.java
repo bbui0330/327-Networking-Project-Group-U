@@ -69,6 +69,7 @@ public class Node extends Thread {
 				
 				missingFiles(server, serverNodeInfo);
 				server.close();		// closes the socket
+				break;
 
 //				compareFiles(serverNodeInfo, server);
 				
