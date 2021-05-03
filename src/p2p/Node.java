@@ -202,6 +202,7 @@ public class Node extends Thread {
 					DataOutputStream out =new DataOutputStream(socket.getOutputStream());
 					out.writeUTF("Done");
 					out.flush();
+					System.out.println("DONE");
 					sendMissing(socket, nodeInfo);
 				}
 				
@@ -223,6 +224,7 @@ public class Node extends Thread {
 				fileName = in.readUTF();
 				System.out.println(fileName);
 				if(fileName.equalsIgnoreCase("Done")) {
+					System.out.println("DONE");
 					nodeInfo.receiveDHT();
 					// checks my missing files now
 					missingFiles(socket, nodeInfo);
