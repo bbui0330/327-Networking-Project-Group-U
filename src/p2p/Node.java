@@ -156,6 +156,7 @@ public class Node extends Thread {
 				
 				// iterates through the file name that I am missing
 				for(String s : missingFileNames) {
+					System.out.println("Requesting file ...");
 					DataOutputStream out =new DataOutputStream(socket.getOutputStream());
 					// sends message to peer/node
 					out.writeUTF(s); 
@@ -220,6 +221,7 @@ public class Node extends Thread {
 				// closes my socket
 				socket.close();
 			}else {
+				System.out.println("Sending file ...");
 				// Sending message to peer/node
 				DataOutputStream out =new DataOutputStream(socket.getOutputStream());
 				out.writeUTF("Sending");
