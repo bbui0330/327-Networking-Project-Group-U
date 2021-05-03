@@ -185,8 +185,6 @@ public class Node extends Thread {
 					DataOutputStream out2 =new DataOutputStream(socket.getOutputStream());
 					out2.writeUTF("Exit");
 					out2.flush();
-					// run main again;
-					run();
 				}else {
 					// sends the "Done" message to peer/node
 					DataOutputStream out3 =new DataOutputStream(socket.getOutputStream());
@@ -285,7 +283,9 @@ public class Node extends Thread {
 	public void run() {
 		super.run();
 		try{
-			link();	// starts the link() function
+			while(true) {
+				link();	// starts the link() function
+			}
 		}
 		catch(IOException e) {} catch (ClassNotFoundException e) {
 			// TODO Auto-generated catch block
